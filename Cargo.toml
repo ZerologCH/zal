@@ -5,7 +5,7 @@ members = ["ir", "compiler", "vm", "tools/cli", "tools/prof", "rt", "runtime/aot
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
-license = "UNLICENSED"
+license = "BUSL-1.1"
 
 [workspace.dependencies]
 serde = { version = "1", features = ["derive"] }

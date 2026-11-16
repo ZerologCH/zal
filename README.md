@@ -80,3 +80,18 @@ Without `--policy` nothing is granted and a run with effects is refused.
 - [SECURITY.md](SECURITY.md) — capability model
 - [BOOTSTRAP.md](BOOTSTRAP.md) — why stage 0 is Rust and what self-hosting would mean
 - `docs/decisions/`, `docs/rfcs/` — design decisions (German)
+- [ROADMAP.md](ROADMAP.md) — planned releases
+- [CHANGELOG.md](CHANGELOG.md) — shipped changes
+
+## License
+
+ZAL is source-available under the [Business Source License 1.1](LICENSE).
+
+- **Free:** personal use and home labs, learning and research, and open source
+  projects not run by an organization for its business.
+- **Commercial license required:** production use by organizations, including
+  integrating ZAL into their products, services, internal systems or
+  infrastructure, or offering it as a hosted service. Contact us via
+  https://zerolog.ch.
+- **Becomes open source:** each version converts to the Apache License 2.0 four
+  years after its release (0.1.0 on 2026-11-16).
