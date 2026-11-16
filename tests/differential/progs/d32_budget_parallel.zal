@@ -1,0 +1,21 @@
+module d32
+
+extern tool slow(x: Int) -> Int
+
+workflow w4() -> Int requires tool.slow budget { max_parallel: 2 } {
+    let (a, b, c, d) = parallel { slow(1), slow(1), slow(1), slow(1) }
+    a + b + c + d
+}
+workflow w1() -> Int requires tool.slow budget { max_parallel: 1 } {
+    let (a, b, c) = parallel { slow(1), slow(2), slow(3) }
+    a + b + c
+}
+workflow wbig() -> Int requires tool.slow budget { max_parallel: 8 } {
+    let (a, b, c, d) = parallel { slow(1), slow(1), slow(1), slow(1) }
+    a + b + c + d
+}
+workflow wspawn() -> Int requires tool.slow budget { max_parallel: 2 } {
+    let ts = [spawn slow(1), spawn slow(2), spawn slow(3), spawn slow(4)]
+    let rs = join(ts)
+    len(rs)
+}

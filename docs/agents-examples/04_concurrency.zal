@@ -1,0 +1,49 @@
+module agents.concurrency
+
+extern tool fetch(url: Str) -> Result<Str, Str> readonly
+
+// parallel: all branches run, the result is a tuple, one slot per branch.
+task both(a: Str, b: Str) -> Result<Int, Str> requires tool.fetch {
+    let (x, y) = parallel {
+        fetch(a)
+        fetch(b)
+    }
+    let s1 = x?
+    let s2 = y?
+    Ok(len(s1) + len(s2))
+}
+
+// spawn starts work now; await collects it later.
+task spawned(a: Str, b: Str) -> Result<Int, Str> requires tool.fetch {
+    let t1 = spawn fetch(a)
+    let t2 = spawn fetch(b)
+    let r1 = await t1
+    let r2 = await t2
+    Ok(len(r1?) + len(r2?))
+}
+
+// await_any returns (index, value) of the first finished task.
+task first_of(urls: List<Str>) -> Result<Str, Str> requires tool.fetch {
+    let mut tasks: List<Task<Result<Str, Str>>> = []
+    for u in urls {
+        tasks = push(tasks, spawn fetch(u))
+    }
+    let (k, r) = await_any(tasks)
+    print("winner " + str(k))
+    r
+}
+
+// race: first finished branch wins, the others are cancelled.
+task fastest(a: Str, b: Str) -> Result<Str, Str> requires tool.fetch {
+    race { fetch(a), fetch(b) }
+}
+
+// timeout: Some(value) if the body finishes in time, else None (and cancelled).
+task bounded(u: Str) -> Option<Result<Str, Str>> requires tool.fetch {
+    timeout(5s) { fetch(u) }
+}
+
+// retry: the body must yield a Result; it is re-run on Err, sleeping backoff between.
+task retried(u: Str) -> Result<Str, Str> requires tool.fetch {
+    retry(3, backoff: 250ms) { fetch(u) }
+}

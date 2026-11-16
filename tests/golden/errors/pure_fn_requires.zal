@@ -1,0 +1,3 @@
+// expect-error: `fn f` is pure and cannot declare `requires`
+module t
+fn f() -> Int requires tool.x { 1 }

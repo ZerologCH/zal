@@ -1,0 +1,75 @@
+module d06
+
+fn sum_skip(n: Int, skip: Int, stop: Int) -> Int {
+    let mut total = 0
+    for i in range(n) {
+        if i == skip { continue }
+        if i == stop { break }
+        total = total + i
+    }
+    total
+}
+fn nested(n: Int) -> Int {
+    let mut c = 0
+    for i in range(n) {
+        for j in range(n) {
+            if j > i { break }
+            if (i + j) % 2 == 1 { continue }
+            c = c + 1
+        }
+    }
+    c
+}
+fn while_sum(n: Int) -> Int {
+    let mut i = 0
+    let mut s = 0
+    while i < n { s = s + i
+        i = i + 1 }
+    s
+}
+fn while_break(n: Int) -> Int {
+    let mut i = 0
+    while true {
+        i = i + 1
+        if i > n { break }
+    }
+    i
+}
+fn while_cont(n: Int) -> Int {
+    let mut i = 0
+    let mut hits = 0
+    while i < n {
+        i = i + 1
+        if i % 3 != 0 { continue }
+        hits = hits + 1
+    }
+    hits
+}
+fn for_over_list(xs: List<Str>) -> Str {
+    let mut s = ""
+    for x in xs { s = s + x }
+    s
+}
+fn return_in_loop(xs: List<Int>, want: Int) -> Int {
+    for x in xs { if x == want { return x * 100 } }
+    -1
+}
+fn collatz(n: Int) -> Int {
+    let mut x = n
+    let mut steps = 0
+    while x != 1 {
+        if x % 2 == 0 { x = x / 2 } else { x = 3 * x + 1 }
+        steps = steps + 1
+    }
+    steps
+}
+
+task t_sum_skip(n: Int, skip: Int, stop: Int) -> Int { sum_skip(n, skip, stop) }
+task t_nested(n: Int) -> Int { nested(n) }
+task t_while_sum(n: Int) -> Int { while_sum(n) }
+task t_while_break(n: Int) -> Int { while_break(n) }
+task t_while_cont(n: Int) -> Int { while_cont(n) }
+task t_for_list(xs: List<Str>) -> Str { for_over_list(xs) }
+task t_return_loop(xs: List<Int>, want: Int) -> Int { return_in_loop(xs, want) }
+task t_collatz(n: Int) -> Int { collatz(n) }
+task t_range_neg() -> List<List<Int>> { [range(-3), range(0)] }

@@ -1,0 +1,1 @@
+{"tools":{"build":{"echo":true},"deploy":{"echo":true,"fail_first":2}}}

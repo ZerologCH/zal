@@ -1,0 +1,3 @@
+module d43
+
+task s_tuple2() -> Str { str((1, 2)) }

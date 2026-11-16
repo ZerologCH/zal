@@ -1,0 +1,33 @@
+module d08
+
+type Point = { x: Int, y: Int }
+type Line = { a: Point, b: Point, label: Str }
+
+fn mk(x: Int, y: Int) -> Point { Point { x: x, y: y } }
+fn len2(l: Line) -> Int { let dx = l.b.x - l.a.x
+    let dy = l.b.y - l.a.y
+    dx * dx + dy * dy }
+fn shift(p: Point, d: Int) -> Point { Point { x: p.x + d, y: p.y } }
+fn eq(a: Point, b: Point) -> List<Bool> { [a == b, a != b] }
+fn field_order() -> Point { Point { y: 2, x: 1 } }
+fn in_list() -> List<Point> { [mk(1, 2), mk(3, 4)] }
+fn sum_list(ps: List<Point>) -> Int {
+    let mut t = 0
+    for p in ps { t = t + p.x * p.y }
+    t
+}
+
+task t_mk(x: Int, y: Int) -> Point { mk(x, y) }
+task t_line() -> Line {
+    let l = Line { a: mk(0, 0), b: mk(3, 4), label: "hyp" }
+    Line { a: l.a, b: l.b, label: l.label + str(len2(l)) }
+}
+task t_shift() -> List<Point> { let p = mk(1, 1)
+    [p, shift(p, 5)] }
+task t_eq(a: Point, b: Point) -> List<Bool> { eq(a, b) }
+task t_order() -> Point { field_order() }
+task t_in_list() -> List<Point> { in_list() }
+task t_sum(ps: List<Point>) -> Int { sum_list(ps) }
+task t_nested_field() -> Str { let l = Line { a: mk(1, 2), b: mk(3, 4), label: "n" }
+    l.label + str(l.a.x) + str(l.b.y) }
+task t_map_of_records() -> Map<Point> { map_set(map_new(), "p", mk(7, 8)) }

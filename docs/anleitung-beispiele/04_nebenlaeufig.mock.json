@@ -1,0 +1,4 @@
+{ "tools": {
+    "fetch": { "latency_ms": 20, "result": { "ok": "inhalt" } },
+    "flaky": { "latency_ms": 5, "fail_first": 2, "result": { "ok": "endlich" } }
+} }

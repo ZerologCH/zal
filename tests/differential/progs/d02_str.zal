@@ -1,0 +1,23 @@
+module d02
+
+fn cat(a: Str, b: Str) -> Str { a + b }
+fn cat3(a: Str, b: Str, c: Int) -> Str { a + "-" + b + "-" + str(c) }
+fn cmp(a: Str, b: Str) -> List<Bool> { [a < b, a <= b, a > b, a >= b, a == b, a != b] }
+fn length(a: Str) -> Int { len(a) }
+fn escapes() -> Str { "a\tb\nc\"d\\e" }
+fn empty() -> List<Int> { let (a, b, c) = ("", len(""), "" == "")
+    [len(a), b, if c { 1 } else { 0 }] }
+fn ordering(a: Str) -> Bool { a < "b" }
+
+task t_cat(a: Str, b: Str) -> Str { cat(a, b) }
+task t_cat3(a: Str, b: Str, c: Int) -> Str { cat3(a, b, c) }
+task t_cmp(a: Str, b: Str) -> List<Bool> { cmp(a, b) }
+task t_len(a: Str) -> Int { length(a) }
+task t_escapes() -> Str { escapes() }
+task t_empty() -> List<Int> { empty() }
+task t_ordering(a: Str) -> Bool { ordering(a) }
+task t_loop(n: Int) -> Str {
+    let mut s = ""
+    for i in range(n) { s = s + str(i) + "," }
+    s
+}

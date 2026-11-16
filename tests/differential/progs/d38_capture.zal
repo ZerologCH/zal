@@ -1,0 +1,44 @@
+module d38
+
+extern tool work(x: Int) -> Int
+
+type Box = { n: Int, tags: List<Str> }
+
+task t_spawn_list_capture() -> Int requires tool.work {
+    let xs = [1, 2, 3]
+    let t = spawn { let mut s = 0
+        for x in xs { s = s + work(x) }
+        s }
+    let ys = push(xs, 4)
+    await t + len(ys) * 100 + len(xs) * 10000
+}
+task t_capture_record() -> Int requires tool.work {
+    let b = Box { n: 5, tags: ["a", "b"] }
+    let t = spawn work(b.n)
+    let (r, l) = parallel { work(b.n + 1), len(b.tags) }
+    await t + r + l
+}
+task t_shadow_after_spawn() -> Int requires tool.work {
+    let x = 1
+    let t = spawn work(x)
+    let x = 50
+    await t + x
+}
+task t_parallel_shared_read(s: Str) -> Str {
+    let (a, b) = parallel { s + "1", s + "2" }
+    a + b
+}
+task t_spawn_in_loop() -> Int requires tool.work {
+    let mut ts: List<Task<Int>> = []
+    for i in range(4) { ts = push(ts, spawn work(i * i)) }
+    let mut s = 0
+    for t in ts { s = s + await t }
+    s
+}
+task t_tasks_in_map_like() -> Int requires tool.work {
+    let a = spawn work(1)
+    let b = spawn work(2)
+    let c = [a, b, a]
+    let rs = join(c)
+    rs[0] + rs[1] * 10 + rs[2] * 100
+}

@@ -1,0 +1,29 @@
+module d55
+
+task t_sum(n: Int) -> Int {
+    let mut s = 0
+    for i in range(n) { s = s + i }
+    s
+}
+task t_push(n: Int) -> Int {
+    let mut xs: List<Int> = []
+    for i in range(n) { xs = push(xs, i + len(xs)) }
+    len(xs) + xs[n - 1]
+}
+task t_map_fill(n: Int) -> Int {
+    let mut m: Map<Int> = map_new()
+    for i in range(n) { m = map_set(m, "k" + str(i), i) }
+    let mut s = 0
+    for k in map_keys(m) { s = s + len(k) }
+    s + len(m)
+}
+task t_str_build(n: Int) -> Int {
+    let mut s = ""
+    for i in range(n) { s = s + "x" }
+    len(s)
+}
+task t_overflow_loop(n: Int) -> Int {
+    let mut s = 1
+    for i in range(n) { s = s * 3 }
+    s
+}

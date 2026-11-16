@@ -1,0 +1,62 @@
+module d20
+
+type Rec = { id: Str, size: Int }
+
+extern tool echo_i(x: Int) -> Int
+extern tool echo_s(s: Str) -> Str
+extern tool sfx(s: Str) -> Str
+extern tool const_i() -> Int
+extern tool get_rec(x: Int) -> Rec
+extern tool res_ok(s: Str) -> Result<Str, Str>
+extern tool res_err(s: Str) -> Result<Str, Str>
+extern tool res_echo(s: Str) -> Result<Str, Str>
+extern tool res_sfx(s: Str) -> Result<Str, Str>
+extern tool list_out() -> List<Int>
+extern tool map_out() -> Map<Int>
+extern tool opt_some() -> Option<Int>
+extern tool opt_none() -> Option<Int>
+extern tool dur_out() -> Dur
+extern tool unit_out() -> Unit
+extern tool res_rec() -> Result<Rec, Str>
+extern tool res_err_int() -> Result<Int, Int>
+extern tool bool_out() -> Bool
+extern net fetch(url: Str) -> Str
+extern file read_f(p: Str) -> Str
+extern secret get_secret(n: Str) -> Str
+extern worker run_w(x: Int) -> Int
+extern deploy push_d(x: Str) -> Result<Str, Str>
+
+task t_echo_i(x: Int) -> Int requires tool.echo_i { echo_i(x) + 1 }
+task t_echo_s(s: Str) -> Str requires tool.echo_s { echo_s(s) + "!" }
+task t_sfx(s: Str) -> Str requires tool.sfx { sfx(s) }
+task t_const_i() -> Int requires tool.const_i { const_i() }
+task t_rec() -> Rec requires tool.get_rec { get_rec(1) }
+task t_rec_field() -> Str requires tool.get_rec { let r = get_rec(1)
+    r.id + str(r.size) }
+task t_res_ok() -> Result<Str, Str> requires tool.res_ok { res_ok("x") }
+task t_res_err() -> Result<Str, Str> requires tool.res_err { res_err("x") }
+task t_res_echo(s: Str) -> Result<Str, Str> requires tool.res_echo { res_echo(s) }
+task t_res_sfx(s: Str) -> Result<Str, Str> requires tool.res_sfx { res_sfx(s) }
+task t_try_ok() -> Result<Str, Str> requires tool.res_ok { let v = res_ok("x")?
+    Ok(v + "?") }
+task t_try_err() -> Result<Str, Str> requires tool.res_err { let v = res_err("x")?
+    Ok(v + "?") }
+task t_list() -> List<Int> requires tool.list_out { list_out() }
+task t_map() -> Map<Int> requires tool.map_out { map_out() }
+task t_opt_some() -> Option<Int> requires tool.opt_some { opt_some() }
+task t_opt_none() -> Option<Int> requires tool.opt_none { opt_none() }
+task t_dur() -> Dur requires tool.dur_out { dur_out() }
+task t_unit() -> Unit requires tool.unit_out { unit_out() }
+task t_res_rec() -> Result<Rec, Str> requires tool.res_rec { res_rec() }
+task t_res_err_int() -> Result<Int, Int> requires tool.res_err_int { res_err_int() }
+task t_bool() -> Bool requires tool.bool_out { bool_out() }
+task t_net() -> Str requires net.fetch { fetch("http://x/") }
+task t_file() -> Str requires file.read_f { read_f("/etc/x") }
+task t_secret() -> Str requires secret.get_secret { get_secret("k") }
+task t_worker() -> Int requires worker.run_w { run_w(7) }
+task t_deploy() -> Result<Str, Str> requires deploy.push_d { push_d("prod") }
+task t_sequence(n: Int) -> Int requires tool.echo_i {
+    let mut s = 0
+    for i in range(n) { s = s + echo_i(i) }
+    s
+}

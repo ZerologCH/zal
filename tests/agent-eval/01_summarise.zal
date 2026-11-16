@@ -1,0 +1,20 @@
+module agents.summarise_research
+
+// Research step: read three notes, grep for open TODOs, summarise the lot.
+extern tool read_file(path: Str) -> Result<Str, Str> readonly
+extern tool grep(pattern: Str) -> Result<Str, Str> readonly
+extern tool summarise(text: Str) -> Result<Str, Str>
+
+workflow research() -> Result<Str, Str>
+    requires tool.read_file, tool.grep, tool.summarise
+    budget { timeout: 2min, max_tool_calls: 10 }
+{
+    // The three reads are independent and readonly: ZAL runs them concurrently.
+    let a = read_file("a.md")?
+    let b = read_file("b.md")?
+    let c = read_file("c.md")?
+    let todos = grep("TODO")?
+    let text = a + "\n" + b + "\n" + c + "\n" + todos
+    let summary = summarise(text)?
+    Ok(summary)
+}

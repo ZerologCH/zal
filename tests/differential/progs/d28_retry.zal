@@ -1,0 +1,25 @@
+module d28
+
+extern tool flaky(x: Int) -> Result<Int, Str>
+extern tool always_err(x: Int) -> Result<Int, Str>
+extern tool ok_tool(x: Int) -> Result<Int, Str>
+
+task t_retry(n: Int) -> Result<Int, Str> requires tool.flaky { retry(n) { flaky(5) } }
+task t_retry_backoff(n: Int) -> Result<Int, Str> requires tool.flaky { retry(n, backoff: 20ms) { flaky(5) } }
+task t_always_err() -> Result<Int, Str> requires tool.always_err { retry(3) { always_err(1) } }
+task t_ok_first() -> Result<Int, Str> requires tool.ok_tool { retry(3) { ok_tool(9) } }
+task t_zero() -> Result<Int, Str> requires tool.ok_tool { retry(0) { ok_tool(9) } }
+task t_one() -> Result<Int, Str> requires tool.always_err { retry(1) { always_err(1) } }
+task t_multi_step() -> Result<Int, Str> requires tool.flaky, tool.ok_tool {
+    retry(4) { let a = ok_tool(1)?
+        let b = flaky(a)?
+        Ok(a + b) }
+}
+task t_after_retry(n: Int) -> Result<Int, Str> requires tool.flaky {
+    let v = retry(n) { flaky(10) }?
+    Ok(v * 2)
+}
+task t_retry_err_payload() -> Result<Int, Int> requires tool.always_err {
+    retry(2) { let r = always_err(1)
+        match r { Ok(v) => Ok(v), Err(e) => Err(len(e)) } }
+}

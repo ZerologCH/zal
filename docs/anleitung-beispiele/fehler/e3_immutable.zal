@@ -1,0 +1,6 @@
+module fehler.e3
+fn f() -> Int {
+    let x = 1
+    x = 2
+    x
+}

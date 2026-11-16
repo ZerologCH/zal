@@ -1,0 +1,18 @@
+[package]
+name = "zal-aot"
+version.workspace = true
+edition.workspace = true
+description = "AOT runtime: static library with a C main for executables built by zal build --backend"
+
+[lib]
+name = "zal_aot"
+crate-type = ["staticlib"]
+# `main` and the undefined zal_fn_* symbols make a test harness impossible;
+# tools/cli/tests/aot.rs builds and links the library instead.
+test = false
+doctest = false
+
+[dependencies]
+zal-ir = { path = "../../ir" }
+zal-vm = { path = "../../vm" }
+serde_json.workspace = true

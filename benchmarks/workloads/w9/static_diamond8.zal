@@ -1,0 +1,38 @@
+module w9.static_diamond8
+
+extern tool dispatch(tool: Str, node: Str, input: Str) -> Result<Str, Str>
+
+// One retried tool call per node, as run_node in scheduler/dag.zal.
+task node(tool: Str, id: Str, input: Str, max_attempts: Int) -> Result<Str, Str> requires tool.dispatch {
+    retry(max_attempts) { dispatch(tool, id, input) }
+}
+
+workflow run_static() -> Result<Int, Str> requires tool.dispatch {
+    let (o_0_0_r) = parallel {
+        node("build", "n0_0", "in0_0", 3)
+    }
+    let o_0_0 = o_0_0_r?
+    let (o_1_0_r, o_1_1_r, o_1_2_r, o_1_3_r, o_1_4_r, o_1_5_r, o_1_6_r, o_1_7_r) = parallel {
+        node("test", "n1_0", "in1_0" + "|" + o_0_0, 3)
+        node("security_scan", "n1_1", "in1_1" + "|" + o_0_0, 3)
+        node("preview", "n1_2", "in1_2" + "|" + o_0_0, 3)
+        node("build", "n1_3", "in1_3" + "|" + o_0_0, 3)
+        node("test", "n1_4", "in1_4" + "|" + o_0_0, 3)
+        node("security_scan", "n1_5", "in1_5" + "|" + o_0_0, 3)
+        node("preview", "n1_6", "in1_6" + "|" + o_0_0, 3)
+        node("build", "n1_7", "in1_7" + "|" + o_0_0, 3)
+    }
+    let o_1_0 = o_1_0_r?
+    let o_1_1 = o_1_1_r?
+    let o_1_2 = o_1_2_r?
+    let o_1_3 = o_1_3_r?
+    let o_1_4 = o_1_4_r?
+    let o_1_5 = o_1_5_r?
+    let o_1_6 = o_1_6_r?
+    let o_1_7 = o_1_7_r?
+    let (o_2_0_r) = parallel {
+        node("preview", "n2_0", "in2_0" + "|" + o_1_0 + "|" + o_1_1 + "|" + o_1_2 + "|" + o_1_3 + "|" + o_1_4 + "|" + o_1_5 + "|" + o_1_6 + "|" + o_1_7, 3)
+    }
+    let o_2_0 = o_2_0_r?
+    Ok(10)
+}

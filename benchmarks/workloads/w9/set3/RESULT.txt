@@ -1,0 +1,3 @@
+static_t3x5: zal 1.332 us  rust-generic 14.006 us  ratio 10.52x  checksums zal=175 rust=175 MATCH  per-rep [9.67, 9.75, 10.06, 10.15, 10.21, 10.67, 10.95, 10.96, 11.08, 11.6]
+static_t6x3: zal 1.783 us  rust-generic 18.118 us  ratio 10.16x  checksums zal=315 rust=315 MATCH  per-rep [9.32, 9.64, 9.88, 10.09, 10.16, 10.28, 10.53, 10.54, 10.57, 10.97]
+static_t2x7: zal 1.296 us  rust-generic 14.201 us  ratio 10.95x  checksums zal=210 rust=210 MATCH  per-rep [9.78, 10.25, 10.31, 10.96, 11.13, 11.33, 11.55, 11.77, 11.81, 13.26]

@@ -1,0 +1,29 @@
+module d01
+
+fn mix(a: Int, b: Int) -> Int { a * 2 + b * 3 - a % 4 + b / 2 }
+fn prec() -> Int { 1 + 2 * 3 - 4 / 2 % 3 }
+fn neg_div(a: Int, b: Int) -> List<Int> { [a / b, a % b] }
+fn neg(a: Int) -> Int { -a }
+fn cmp(a: Int, b: Int) -> List<Bool> { [a < b, a <= b, a > b, a >= b, a == b, a != b] }
+fn add(a: Int, b: Int) -> Int { a + b }
+fn sub(a: Int, b: Int) -> Int { a - b }
+fn mul(a: Int, b: Int) -> Int { a * b }
+fn div(a: Int, b: Int) -> Int { a / b }
+fn rem(a: Int, b: Int) -> Int { a % b }
+fn chain(a: Int) -> Int { a + a + a + a }
+fn big_literal() -> Int { 9_000_000_000_000_000_000 }
+
+task t_mix(a: Int, b: Int) -> Int { mix(a, b) }
+task t_prec() -> Int { prec() }
+task t_neg_div(a: Int, b: Int) -> List<Int> { neg_div(a, b) }
+task t_neg(a: Int) -> Int { neg(a) }
+task t_cmp(a: Int, b: Int) -> List<Bool> { cmp(a, b) }
+task t_add(a: Int, b: Int) -> Int { add(a, b) }
+task t_sub(a: Int, b: Int) -> Int { sub(a, b) }
+task t_mul(a: Int, b: Int) -> Int { mul(a, b) }
+task t_div(a: Int, b: Int) -> Int { div(a, b) }
+task t_rem(a: Int, b: Int) -> Int { rem(a, b) }
+task t_chain(a: Int) -> Int { chain(a) }
+task t_big() -> Int { big_literal() }
+task t_big_sum() -> Int { big_literal() + big_literal() }
+task t_nested_neg(a: Int) -> Int { - -a }

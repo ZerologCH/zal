@@ -1,0 +1,5 @@
+// expect-error: calling `inner` needs capability `tool.deploy`
+module t
+extern tool deploy(r: Str) -> Result<Str, Str>
+task inner() -> Result<Str, Str> requires tool.deploy { deploy("x") }
+workflow outer() -> Result<Str, Str> requires tool.build { inner() }

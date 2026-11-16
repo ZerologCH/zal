@@ -1,0 +1,24 @@
+module d31
+
+extern tool slow(x: Int) -> Int
+
+workflow w_call() -> Int requires tool.slow budget { timeout: 30ms } { slow(1) }
+workflow w_sleep() -> Int budget { timeout: 30ms } { sleep(500ms)
+    1 }
+workflow w_ok() -> Int requires tool.slow budget { timeout: 2s } { slow(1) + slow(2) }
+workflow w_second_call() -> Int requires tool.slow budget { timeout: 60ms } {
+    sleep(80ms)
+    slow(1)
+}
+workflow w_busy(n: Int) -> Int budget { timeout: 200ms } {
+    let mut i = 0
+    let mut s = 0
+    while i < n { s = s + i % 7
+        i = i + 1 }
+    s
+}
+workflow w_after_work() -> Int requires tool.slow budget { timeout: 150ms } {
+    let a = slow(1)
+    let b = slow(2)
+    a + b
+}

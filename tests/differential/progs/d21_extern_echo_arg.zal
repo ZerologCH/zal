@@ -1,0 +1,11 @@
+module d21
+
+extern tool pick1(a: Str, b: Int) -> Int
+extern tool pick2(a: Int, b: Int, c: Int) -> Int
+extern tool res_pick(a: Int, b: Str) -> Result<Str, Str>
+extern tool sfx_first(a: Str, b: Int) -> Str
+
+task t_pick1(a: Str, b: Int) -> Int requires tool.pick1 { pick1(a, b) }
+task t_pick2(a: Int, b: Int, c: Int) -> Int requires tool.pick2 { pick2(a, b, c) }
+task t_res_pick(a: Int, b: Str) -> Result<Str, Str> requires tool.res_pick { res_pick(a, b) }
+task t_sfx_first(a: Str, b: Int) -> Str requires tool.sfx_first { sfx_first(a, b) }

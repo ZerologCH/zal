@@ -1,0 +1,6 @@
+module d59
+
+task t_return_in_branch(x: Int) -> Int {
+    let (a, b) = parallel { { if x > 0 { return 5 } else { 1 } }, 2 }
+    a + b + 100
+}

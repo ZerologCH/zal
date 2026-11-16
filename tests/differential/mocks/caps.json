@@ -1,0 +1,1 @@
+{"tools": {"a": {"echo": true}, "b": {"echo": true}, "build": {"echo": true}, "deploy": {"result": {"ok": "dep"}}, "fetch": {"suffix": "!"}}}

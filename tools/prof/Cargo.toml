@@ -1,0 +1,11 @@
+[package]
+name = "zal-prof"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+zal-ir = { path = "../../ir" }
+zal-compiler = { path = "../../compiler" }
+zal-vm = { path = "../../vm", features = ["profiling"] }
+serde_json.workspace = true
+pprof = { version = "0.14", features = ["flamegraph"] }

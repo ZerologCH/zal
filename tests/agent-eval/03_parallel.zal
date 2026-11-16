@@ -1,0 +1,26 @@
+module agents.eval.parallel_tests
+
+// Runs the tests of many packages concurrently and reports the failing ones.
+extern tool run_tests(pkg: Str) -> Result<Bool, Str> readonly
+
+workflow test_all(pkgs: List<Str>) -> Result<List<Str>, Str>
+    requires tool.run_tests
+    budget { timeout: 10min, max_parallel: 4 }
+{
+    // Start one task per package; each runs in its own concurrent slot.
+    let mut tasks: List<Task<Result<Bool, Str>>> = []
+    for p in pkgs {
+        tasks = push(tasks, spawn run_tests(p))
+    }
+    let results = join(tasks)
+
+    // Collect failures in input order; the first tool error aborts the workflow.
+    let mut failed: List<Str> = []
+    for i in range(len(pkgs)) {
+        let passed = results[i]?
+        if !passed {
+            failed = push(failed, pkgs[i])
+        }
+    }
+    Ok(failed)
+}

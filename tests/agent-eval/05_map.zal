@@ -1,0 +1,54 @@
+module agents.count_labels
+
+// Classify every text and count how often each label occurs.
+extern tool classify(text: Str) -> Result<Str, Str>
+
+task count_labels(texts: List<Str>) -> Result<Map<Int>, Str>
+    requires tool.classify
+{
+    let mut counts: Map<Int> = map_new()
+    for t in texts {
+        let label = classify(t)?
+        let n = match map_get(counts, label) {
+            Some(v) => v
+            None => 0
+        }
+        counts = map_set(counts, label, n + 1)
+    }
+    Ok(counts)
+}
+
+// Label with the highest count; ties go to the key seen first.
+fn top_label(counts: Map<Int>) -> Option<Str> {
+    let mut found = false
+    let mut best = ""
+    let mut best_n = 0
+    for k in map_keys(counts) {
+        let n = match map_get(counts, k) {
+            Some(v) => v
+            None => 0
+        }
+        if !found || n > best_n {
+            found = true
+            best = k
+            best_n = n
+        }
+    }
+    if found {
+        Some(best)
+    } else {
+        None
+    }
+}
+
+workflow report(texts: List<Str>) -> Result<Str, Str>
+    requires tool.classify
+    budget { timeout: 2min, max_parallel: 2, max_tool_calls: 100 }
+{
+    ensure len(texts) > 0, "no texts"
+    let counts = count_labels(texts)?
+    match top_label(counts) {
+        Some(l) => Ok("top: " + l)
+        None => Err("no texts")
+    }
+}

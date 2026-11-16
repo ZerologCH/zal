@@ -1,0 +1,6 @@
+{ "tools": {
+    "build":         { "latency_ms": 20, "fail_first": 2, "result": { "ok": { "id": "art-1", "size": 4096 } } },
+    "test":          { "latency_ms": 30, "result": { "ok": { "passed": true, "findings": 0 } } },
+    "security_scan": { "latency_ms": 30, "result": { "ok": { "passed": true, "findings": 0 } } },
+    "preview":       { "latency_ms": 5,  "result": { "ok": "https://preview.example/art-1" } }
+} }

@@ -1,0 +1,90 @@
+module d27
+
+extern tool work(x: Int) -> Int
+
+task t_basic() -> Int requires tool.work {
+    let t = spawn work(5)
+    await t + 1
+}
+task t_twice() -> Int requires tool.work {
+    let t = spawn work(5)
+    await t + await t
+}
+task t_join() -> List<Int> requires tool.work {
+    let ts = [spawn work(30), spawn work(10), spawn work(20)]
+    join(ts)
+}
+task t_await_any() -> Int requires tool.work {
+    let ts = [spawn work(30), spawn work(10), spawn work(20)]
+    let (i, v) = await_any(ts)
+    let all = join(ts)
+    i * 1000 + v + len(all)
+}
+task t_await_any_first() -> Int requires tool.work {
+    let ts = [spawn work(1), spawn work(2)]
+    let (i, v) = await_any(ts)
+    i * 10 + v
+}
+task t_cancel_await() -> Int requires tool.work {
+    let t = spawn work(1)
+    cancel(t)
+    await t
+}
+task t_cancel_done() -> Int requires tool.work {
+    let t = spawn work(1)
+    sleep(50ms)
+    cancel(t)
+    await t
+}
+task t_await_any_cancelled() -> Int requires tool.work {
+    let a = spawn work(1)
+    let b = spawn work(2)
+    cancel(a)
+    let (i, v) = await_any([a, b])
+    i * 10 + v
+}
+task t_await_any_all_cancelled() -> Int requires tool.work {
+    let a = spawn work(1)
+    cancel(a)
+    let (i, v) = await_any([a])
+    v
+}
+task t_await_any_empty() -> Int {
+    let ts: List<Task<Int>> = []
+    let (i, v) = await_any(ts)
+    v
+}
+task t_join_empty() -> Int {
+    let ts: List<Task<Int>> = []
+    len(join(ts))
+}
+task t_spawn_block() -> Int requires tool.work {
+    let t = spawn { let a = work(1)
+        a + work(2) }
+    await t
+}
+task t_spawn_capture(x: Int) -> Int requires tool.work {
+    let t = spawn work(x * 2)
+    let x = 100
+    await t + x
+}
+task t_many(n: Int) -> Int requires tool.work {
+    let mut ts: List<Task<Int>> = []
+    for i in range(n) { ts = push(ts, spawn work(i)) }
+    let rs = join(ts)
+    let mut s = 0
+    for r in rs { s = s + r }
+    s
+}
+task t_join_after_cancel() -> List<Int> requires tool.work {
+    let a = spawn work(1)
+    let b = spawn work(2)
+    cancel(b)
+    join([a, b])
+}
+task t_cancel_twice() -> Int requires tool.work {
+    let t = spawn work(3)
+    cancel(t)
+    cancel(t)
+    1
+}

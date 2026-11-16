@@ -1,0 +1,1 @@
+{"tools": {"flaky": {"echo": true, "fail_first": 2}, "always_err": {"result": {"err": "always"}}, "ok_tool": {"echo": true}}}

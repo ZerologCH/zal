@@ -1,0 +1,47 @@
+module agents.collections
+
+type Hit = { file: Str, line: Int }
+
+// Lists and maps are values: `xs = push(xs, v)` is the way to add an element.
+fn squares(n: Int) -> List<Int> {
+    let mut out: List<Int> = []
+    for i in range(n) {
+        out = push(out, i * i)
+    }
+    out
+}
+
+// Maps have Str keys. map_get returns Option, so match it; never index.
+fn count_words(words: List<Str>) -> Map<Int> {
+    let mut counts: Map<Int> = map_new()
+    for w in words {
+        let n = match map_get(counts, w) {
+            Some(c) => c
+            None => 0
+        }
+        counts = map_set(counts, w, n + 1)
+    }
+    counts
+}
+
+fn last_hit(hits: List<Hit>) -> Option<Hit> {
+    if len(hits) == 0 { return None }
+    Some(hits[len(hits) - 1])
+}
+
+fn describe(hits: List<Hit>) -> Str {
+    let mut s = ""
+    for h in hits {
+        s = s + h.file + ":" + str(h.line) + "\n"
+    }
+    s
+}
+
+test "counts" {
+    let c = count_words(["a", "b", "a"])
+    let n = match map_get(c, "a") {
+        Some(v) => v
+        None => 0
+    }
+    assert n == 2, "a appears twice"
+}

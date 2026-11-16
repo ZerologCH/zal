@@ -1,0 +1,9 @@
+module d51
+
+type Pt = { x: Int, y: Int }
+type Cfg = { name: Str, pts: List<Pt>, tag: Option<Str>, limit: Dur }
+
+task e_cfg(c: Cfg) -> Cfg { c }
+task e_cfg_sum(c: Cfg) -> Int { let mut s = 0
+    for p in c.pts { s = s + p.x + p.y }
+    s }

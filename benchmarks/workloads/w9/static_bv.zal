@@ -1,0 +1,21 @@
+module w9.static_bv
+
+extern tool dispatch(tool: Str, node: Str, input: Str) -> Result<Str, Str>
+
+task node(tool: Str, id: Str, input: Str, max_attempts: Int) -> Result<Str, Str> requires tool.dispatch {
+    retry(max_attempts) { dispatch(tool, id, input) }
+}
+
+workflow run_static() -> Result<Int, Str> requires tool.dispatch {
+    let b = node("build", "build", "build", 3)?
+    let (u_r, e_r, s_r) = parallel {
+        node("test", "unit", "unit" + "|" + b, 3)
+        node("test", "e2e", "e2e" + "|" + b, 3)
+        node("security_scan", "scan", "scan" + "|" + b, 3)
+    }
+    let u = u_r?
+    let e = e_r?
+    let s = s_r?
+    let p = node("preview", "preview", "preview" + "|" + u + "|" + e + "|" + s, 3)?
+    Ok(5)
+}

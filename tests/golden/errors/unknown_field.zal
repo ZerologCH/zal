@@ -1,0 +1,4 @@
+// expect-error: record `A` has no field `z`
+module t
+type A = { x: Int }
+fn f(a: A) -> Int { a.z }

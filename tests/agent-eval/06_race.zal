@@ -1,0 +1,19 @@
+module agents.race_search
+
+// Two read-only search providers. Race them; if the first answer is an Err, fall back to provider B alone.
+extern tool search_a(q: Str) -> Result<Str, Str> readonly
+extern tool search_b(q: Str) -> Result<Str, Str> readonly
+
+workflow search(q: Str) -> Result<Str, Str>
+    requires tool.search_a, tool.search_b
+    budget { timeout: 30s, max_parallel: 2, max_tool_calls: 4 }
+{
+    let first = race {
+        search_a(q)
+        search_b(q)
+    }
+    match first {
+        Ok(s) => Ok(s)
+        Err(_) => search_b(q)
+    }
+}

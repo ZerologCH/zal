@@ -1,0 +1,3 @@
+module d47
+
+task lt() -> List<(Int, Str)> { [(1, "a"), (2, "b")] }

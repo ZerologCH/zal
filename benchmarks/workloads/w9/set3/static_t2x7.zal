@@ -1,0 +1,44 @@
+module w9.static_t2x7
+
+extern tool dispatch(tool: Str, node: Str, input: Str) -> Result<Str, Str>
+
+// One retried tool call per node, as run_node in scheduler/dag.zal.
+task node(tool: Str, id: Str, input: Str, max_attempts: Int) -> Result<Str, Str> requires tool.dispatch {
+    retry(max_attempts) { dispatch(tool, id, input) }
+}
+
+workflow run_static() -> Result<Int, Str> requires tool.dispatch {
+    let (o_0_0_r, o_0_1_r, o_0_2_r, o_0_3_r, o_0_4_r, o_0_5_r, o_0_6_r) = parallel {
+        node("build", "n0_0", "in0_0", 3)
+        node("test", "n0_1", "in0_1", 3)
+        node("security_scan", "n0_2", "in0_2", 3)
+        node("preview", "n0_3", "in0_3", 3)
+        node("build", "n0_4", "in0_4", 3)
+        node("test", "n0_5", "in0_5", 3)
+        node("security_scan", "n0_6", "in0_6", 3)
+    }
+    let o_0_0 = o_0_0_r?
+    let o_0_1 = o_0_1_r?
+    let o_0_2 = o_0_2_r?
+    let o_0_3 = o_0_3_r?
+    let o_0_4 = o_0_4_r?
+    let o_0_5 = o_0_5_r?
+    let o_0_6 = o_0_6_r?
+    let (o_1_0_r, o_1_1_r, o_1_2_r, o_1_3_r, o_1_4_r, o_1_5_r, o_1_6_r) = parallel {
+        node("build", "n1_0", "in1_0" + "|" + o_0_0 + "|" + o_0_1 + "|" + o_0_2 + "|" + o_0_3, 3)
+        node("test", "n1_1", "in1_1" + "|" + o_0_1 + "|" + o_0_2 + "|" + o_0_3 + "|" + o_0_4, 3)
+        node("security_scan", "n1_2", "in1_2" + "|" + o_0_2 + "|" + o_0_3 + "|" + o_0_4 + "|" + o_0_5, 3)
+        node("preview", "n1_3", "in1_3" + "|" + o_0_3 + "|" + o_0_4 + "|" + o_0_5 + "|" + o_0_6, 3)
+        node("build", "n1_4", "in1_4" + "|" + o_0_4 + "|" + o_0_5 + "|" + o_0_6 + "|" + o_0_0, 3)
+        node("test", "n1_5", "in1_5" + "|" + o_0_5 + "|" + o_0_6 + "|" + o_0_0 + "|" + o_0_1, 3)
+        node("security_scan", "n1_6", "in1_6" + "|" + o_0_6 + "|" + o_0_0 + "|" + o_0_1 + "|" + o_0_2, 3)
+    }
+    let o_1_0 = o_1_0_r?
+    let o_1_1 = o_1_1_r?
+    let o_1_2 = o_1_2_r?
+    let o_1_3 = o_1_3_r?
+    let o_1_4 = o_1_4_r?
+    let o_1_5 = o_1_5_r?
+    let o_1_6 = o_1_6_r?
+    Ok(14)
+}

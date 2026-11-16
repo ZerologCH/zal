@@ -1,0 +1,8 @@
+// expect-error: variables captured by a concurrent block are read-only copies
+module t
+task f() -> Int {
+    let mut n = 0
+    let (a, b) = parallel { { n = 1
+        n }, 2 }
+    a + b
+}

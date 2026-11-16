@@ -1,0 +1,24 @@
+module d36
+
+fn chatty(n: Int) -> Int { print("fn " + str(n))
+    n + 1 }
+
+task t_print() -> Int { print("one")
+    print("two")
+    let x = chatty(1)
+    print("three " + str(x))
+    x }
+task t_print_unit() { print("only") }
+task t_assert_ok(n: Int) -> Int { assert n > 0, "must be positive"
+    n }
+task t_assert_msg(n: Int) -> Int { assert n > 0, "n was " + str(n)
+    n }
+task t_assert_nomsg(n: Int) -> Int { assert n > 0
+    n }
+task t_assert_in_fn(n: Int) -> Int { check(n)
+    n }
+fn check(n: Int) { assert n != 13, "unlucky" }
+task t_print_before_trap() -> Int { print("before")
+    let x = 1 / 0
+    print("after")
+    x }

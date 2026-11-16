@@ -1,0 +1,3 @@
+module d41
+
+task s_tuple() -> Str { str((1, "a", true)) }

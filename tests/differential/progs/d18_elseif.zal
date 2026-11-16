@@ -1,0 +1,12 @@
+module d18
+
+fn sign(n: Int) -> Str { if n < 0 { "neg" } else if n == 0 { "zero" } else { "pos" } }
+fn grade(n: Int) -> Str { if n >= 90 { "A" } else if n >= 80 { "B" } else if n >= 70 { "C" } else { "F" } }
+
+task t_sign(n: Int) -> Str { sign(n) }
+task t_grade(n: Int) -> Str { grade(n) }
+task t_stmt_chain(n: Int) -> Int {
+    let mut r = 0
+    if n == 1 { r = 10 } else if n == 2 { r = 20 } else { r = 30 }
+    r
+}

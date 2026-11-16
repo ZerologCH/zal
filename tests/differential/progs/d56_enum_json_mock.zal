@@ -1,0 +1,10 @@
+module d56
+
+enum Mode { Fast, Slow, Custom(Int) }
+
+extern tool get_mode(x: Int) -> Mode
+
+task t_mode() -> Mode requires tool.get_mode { get_mode(1) }
+task t_mode_code() -> Int requires tool.get_mode {
+    match get_mode(1) { Mode.Fast => 1, Mode.Slow => 2, Mode.Custom(n) => 100 + n }
+}

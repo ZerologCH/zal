@@ -1,0 +1,46 @@
+module d10
+
+fn first_pos(xs: List<Int>) -> Option<Int> {
+    for x in xs { if x > 0 { return Some(x) } }
+    None
+}
+fn double_first(xs: List<Int>) -> Option<Int> { let f = first_pos(xs)?
+    Some(f * 2) }
+fn chain(a: List<Int>, b: List<Int>) -> Option<Int> {
+    let x = first_pos(a)?
+    let y = first_pos(b)?
+    Some(x + y)
+}
+fn unwrap_or(o: Option<Int>, d: Int) -> Int { match o { Some(v) => v, None => d } }
+fn parse(s: Str) -> Result<Int, Str> {
+    ensure len(s) > 0, "empty"
+    ensure s != "bad", "bad input: " + s
+    Ok(len(s))
+}
+fn two(a: Str, b: Str) -> Result<Int, Str> { let x = parse(a)?
+    let y = parse(b)?
+    Ok(x * 10 + y) }
+fn describe(r: Result<Int, Str>) -> Str { match r { Ok(v) => "ok " + str(v), Err(e) => "err " + e } }
+fn nested_opt(o: Option<Option<Int>>) -> Int { match o { Some(i) => match i { Some(v) => v, None => -1 }, None => -2 } }
+fn opt_list() -> List<Option<Int>> { [Some(1), None, Some(3)] }
+fn res_list() -> List<Result<Int, Str>> { [Ok(1), Err("e"), Ok(3)] }
+fn ensure_fn(n: Int) -> Result<Unit, Str> { ensure n > 0, "non-positive"
+    Ok(()) }
+fn err_code(n: Int) -> Result<Int, Int> { ensure n < 10, n * 100
+    Ok(n) }
+
+task t_first(xs: List<Int>) -> Option<Int> { first_pos(xs) }
+task t_double_first(xs: List<Int>) -> Option<Int> { double_first(xs) }
+task t_chain(a: List<Int>, b: List<Int>) -> Option<Int> { chain(a, b) }
+task t_unwrap_or(o: Option<Int>, d: Int) -> Int { unwrap_or(o, d) }
+task t_parse(s: Str) -> Result<Int, Str> { parse(s) }
+task t_two(a: Str, b: Str) -> Result<Int, Str> { two(a, b) }
+task t_describe(r: Result<Int, Str>) -> Str { describe(r) }
+task t_nested(o: Option<Option<Int>>) -> Int { nested_opt(o) }
+task t_opt_list() -> List<Option<Int>> { opt_list() }
+task t_res_list() -> List<Result<Int, Str>> { res_list() }
+task t_ensure(n: Int) -> Result<Unit, Str> { ensure_fn(n) }
+task t_err_code(n: Int) -> Result<Int, Int> { err_code(n) }
+task t_try_in_task(a: Str) -> Result<Int, Str> { let x = parse(a)?
+    Ok(x + 1000) }
+task t_some_none() -> List<Option<Int>> { [Some(1), None] }

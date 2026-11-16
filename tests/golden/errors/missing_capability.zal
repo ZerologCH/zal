@@ -1,0 +1,4 @@
+// expect-error: calling `build` needs capability `tool.build`; add `requires tool.build` to `w`
+module t
+extern tool build(r: Str) -> Result<Str, Str>
+workflow w() -> Result<Str, Str> { build("x") }

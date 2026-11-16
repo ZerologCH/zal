@@ -1,0 +1,3 @@
+// expect-error: unknown effect kind in `requires proxmox.root`
+module t
+workflow w() requires proxmox.root { }

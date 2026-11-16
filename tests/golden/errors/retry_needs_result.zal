@@ -1,0 +1,3 @@
+// expect-error: a `retry` body must produce a Result
+module t
+fn f() -> Int { retry(3) { 5 } }

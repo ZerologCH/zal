@@ -1,0 +1,15 @@
+module d04
+
+fn plus(a: Dur, b: Dur) -> Dur { a + b }
+fn minus(a: Dur, b: Dur) -> Dur { a - b }
+fn cmp(a: Dur, b: Dur) -> List<Bool> { [a < b, a <= b, a > b, a >= b, a == b, a != b] }
+fn lit() -> List<Dur> { [250ms, 3s, 2min, 1h] }
+fn neg(a: Dur) -> Dur { -a }
+
+task t_plus(a: Dur, b: Dur) -> Dur { plus(a, b) }
+task t_minus(a: Dur, b: Dur) -> Dur { minus(a, b) }
+task t_cmp(a: Dur, b: Dur) -> List<Bool> { cmp(a, b) }
+task t_lit() -> List<Dur> { lit() }
+task t_neg(a: Dur) -> Dur { neg(a) }
+task t_str(a: Dur) -> Str { str(a) + "|" + str(1s + 5ms) }
+task t_sum_lit() -> Dur { 1h + 30min - 15s }

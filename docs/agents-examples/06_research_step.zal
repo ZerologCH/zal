@@ -1,0 +1,22 @@
+module agents.research_step
+
+// A small research step: read three sources, grep them, summarise via a tool.
+type Summary = { text: Str, sources: Int }
+
+extern tool read_file(path: Str) -> Result<Str, Str> readonly
+extern tool grep(pattern: Str, text: Str) -> Result<Str, Str> readonly
+extern tool summarise(text: Str) -> Result<Str, Str>
+
+workflow research_step(a: Str, b: Str, c: Str, pattern: Str) -> Result<Summary, Str>
+    requires tool.read_file, tool.grep, tool.summarise
+    budget { timeout: 5min, max_parallel: 4, max_tool_calls: 20 }
+{
+    // The three reads are independent and readonly: ZAL runs them concurrently.
+    let fa = read_file(a)?
+    let fb = read_file(b)?
+    let fc = read_file(c)?
+    let hits = grep(pattern, fa + "\n" + fb + "\n" + fc)?
+    ensure len(hits) > 0, "no matches for " + pattern
+    let text = summarise(hits)?
+    Ok(Summary { text: text, sources: 3 })
+}

@@ -1,0 +1,19 @@
+module d22
+
+type R = { a: Int, b: Str }
+
+extern tool z_int() -> Int
+extern tool z_str() -> Str
+extern tool z_bool() -> Bool
+extern tool z_list() -> List<Int>
+extern tool z_opt() -> Option<Int>
+extern tool z_res() -> Result<Int, Str>
+extern tool z_rec() -> R
+
+task t_int() -> Int requires tool.z_int { z_int() }
+task t_str() -> Str requires tool.z_str { z_str() }
+task t_bool() -> Bool requires tool.z_bool { z_bool() }
+task t_list() -> List<Int> requires tool.z_list { z_list() }
+task t_opt() -> Option<Int> requires tool.z_opt { z_opt() }
+task t_res() -> Result<Int, Str> requires tool.z_res { z_res() }
+task t_rec() -> R requires tool.z_rec { z_rec() }

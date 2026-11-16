@@ -1,0 +1,22 @@
+module agents.release_retry
+
+// Build once, then deploy with retries inside a 5s budget for the deploy phase.
+extern tool build(repo: Str) -> Result<Str, Str>
+extern tool deploy(artifact: Str) -> Result<Str, Str>
+
+workflow release(repo: Str) -> Result<Str, Str>
+    requires tool.build, tool.deploy
+    budget { max_tool_calls: 10 }
+{
+    let artifact = build(repo)?
+    // timeout gives None when the deploy phase is too slow; retry re-runs deploy on Err.
+    let outcome = timeout(5s) {
+        retry(3, backoff: 50ms) {
+            deploy(artifact)
+        }
+    }
+    match outcome {
+        Some(r) => r
+        None => Err("deploy timed out")
+    }
+}

@@ -1,0 +1,47 @@
+module d37
+
+extern tool step(x: Int) -> Result<Int, Str>
+
+fn half(x: Int) -> Result<Int, Str> { ensure x % 2 == 0, "odd " + str(x)
+    Ok(x / 2) }
+
+task t_try_in_spawn(x: Int) -> Result<Int, Str> {
+    let t = spawn { let h = half(x)?
+        Ok(h + 1) }
+    await t
+}
+task t_try_in_parallel(x: Int) -> Result<Int, Str> {
+    let (a, b) = parallel { { let h = half(x)?
+        Ok(h) }, half(x + 2) }
+    Ok(a? + b?)
+}
+task t_try_in_timeout(x: Int) -> Result<Int, Str> {
+    let r = timeout(1s) { let h = half(x)?
+        Ok(h) }
+    match r { Some(v) => v, None => Err("timed out") }
+}
+task t_try_in_retry(x: Int) -> Result<Int, Str> { retry(2) { let h = half(x)?
+    Ok(h * 10) } }
+task t_outer_continues(x: Int) -> Int {
+    let r = retry(2) { let h = half(x)?
+        Ok(h) }
+    match r { Ok(v) => v, Err(e) => len(e) }
+}
+task t_ensure_in_task(x: Int) -> Result<Int, Str> {
+    ensure x > 0, "x must be > 0"
+    let v = half(x)?
+    Ok(v)
+}
+task t_early_return(xs: List<Int>) -> Result<Int, Str> {
+    let mut acc = 0
+    for x in xs {
+        let h = half(x)?
+        acc = acc + h
+    }
+    Ok(acc)
+}
+task t_try_step(x: Int) -> Result<Int, Str> requires tool.step {
+    let a = step(x)?
+    let b = step(a)?
+    Ok(a + b)
+}

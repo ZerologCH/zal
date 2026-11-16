@@ -1,0 +1,59 @@
+module examples.dag_pipeline
+
+import scheduler.dag
+
+fn node(id: Str, tool: Str, deps: List<Str>) -> Node {
+    Node { id: id, tool: tool, input: id, deps: deps, max_attempts: 3 }
+}
+
+// Build → (unit tests ‖ e2e ‖ scan) → preview, scheduled by the ZAL scheduler.
+workflow pipeline() -> Result<Str, Str>
+    requires tool.dispatch
+    budget { timeout: 5min, max_parallel: 4 }
+{
+    let nodes = [
+        node("build", "build", []),
+        node("unit", "test", ["build"]),
+        node("e2e", "test", ["build"]),
+        node("scan", "security_scan", ["build"]),
+        node("preview", "preview", ["unit", "e2e", "scan"]),
+    ]
+    let done = run_dag(nodes, 4)?
+    match map_get(done, "preview") {
+        Some(r) => Ok(r.output)
+        None => Err("preview missing")
+    }
+}
+
+workflow run_graph(nodes: List<Node>, max_parallel: Int) -> Result<Int, Str>
+    requires tool.dispatch
+{
+    let done = run_dag(nodes, max_parallel)?
+    Ok(len(done))
+}
+
+test "cycles are rejected" requires tool.dispatch {
+    let r = run_dag([node("a", "x", ["b"]), node("b", "x", ["a"])], 2)
+    assert match r { Err(e) => e == "cycle: 2 node(s) can never become ready", Ok(_) => false }
+}
+
+test "unknown dependencies are rejected" requires tool.dispatch {
+    let r = run_dag([node("a", "x", ["zzz"])], 2)
+    assert match r { Err(_) => true, Ok(_) => false }
+}
+
+test "duplicate ids are rejected" requires tool.dispatch {
+    let r = run_dag([node("a", "x", []), node("a", "x", [])], 2)
+    assert match r { Err(e) => e == "duplicate node id a", Ok(_) => false }
+}
+
+test "outputs flow along edges" requires tool.dispatch {
+    let r = run_dag([node("a", "x", []), node("b", "x", ["a"])], 2)
+    match r {
+        Ok(done) => {
+            let b = map_get(done, "b")
+            assert match b { Some(x) => x.output == "b|a", None => false }, "b sees a's output"
+        }
+        Err(e) => { assert false, e }
+    }
+}

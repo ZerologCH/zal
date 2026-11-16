@@ -1,0 +1,27 @@
+[package]
+name = "zal-cli"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+name = "zal_cli"
+path = "src/lib.rs"
+
+[[bin]]
+name = "zal"
+path = "src/main.rs"
+
+[dependencies]
+zal-ir = { path = "../../ir" }
+zal-compiler = { path = "../../compiler" }
+zal-vm = { path = "../../vm" }
+serde_json.workspace = true
+zal-backend-cranelift = { path = "../../backends/cranelift", optional = true }
+zal-backend-x64 = { path = "../../backends/x64", optional = true }
+
+[features]
+default = ["cranelift", "x64"]
+# Machine-code backends (RFC 0002). Each stream turns its feature on by adding
+# its crate above and listing it here, e.g. cranelift = ["dep:zal-backend-cranelift"].
+cranelift = ["dep:zal-backend-cranelift"]
+x64 = ["dep:zal-backend-x64"]

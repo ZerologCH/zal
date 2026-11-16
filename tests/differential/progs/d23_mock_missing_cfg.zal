@@ -1,0 +1,5 @@
+module d23
+
+extern tool nocfg(x: Int) -> Int
+
+task t_nocfg() -> Int requires tool.nocfg { nocfg(1) }

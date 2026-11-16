@@ -1,0 +1,36 @@
+module examples.build_verify
+
+// Typed tool schemas: the host ABI marshals these records as JSON objects.
+type Artifact = { id: Str, size: Int }
+type Report = { passed: Bool, findings: Int }
+
+extern tool build(repo: Str) -> Result<Artifact, Str>
+extern tool test(a: Artifact) -> Result<Report, Str>
+extern tool security_scan(a: Artifact) -> Result<Report, Str>
+extern tool preview(a: Artifact) -> Result<Str, Str>
+
+workflow build_and_verify(repo: Str) -> Result<Str, Str>
+    requires tool.build, tool.test, tool.security_scan, tool.preview
+    budget { timeout: 30min, max_parallel: 8, max_tool_calls: 50 }
+{
+    // Flaky builds get three attempts with a short pause between them.
+    let artifact = retry(3, backoff: 10ms) { build(repo) }?
+
+    let (tests, scan) = parallel {
+        test(artifact)
+        security_scan(artifact)
+    }
+    let t = tests?
+    let s = scan?
+    ensure t.passed, "tests failed"
+    ensure s.passed && s.findings == 0, "security scan found " + str(s.findings) + " issue(s)"
+
+    preview(artifact)
+}
+
+test "a green pipeline returns a preview url"
+    requires tool.build, tool.test, tool.security_scan, tool.preview
+{
+    let r = build_and_verify("example-repo")
+    assert match r { Ok(_) => true, Err(_) => false }, "expected Ok"
+}

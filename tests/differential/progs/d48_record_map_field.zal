@@ -1,0 +1,11 @@
+module d48
+
+type Bag = { items: List<Int>, tags: Map<Str>, maybe: Option<Int> }
+
+fn bag() -> Bag { Bag { items: [1, 2], tags: map_set(map_new(), "k", "v"), maybe: Some(3) } }
+
+task t_bag() -> Bag { bag() }
+task t_bag_fields() -> Option<Str> {
+    let b = bag()
+    match b.maybe { Some(n) => Some(str(len(b.items)) + str(n) + match map_get(b.tags, "k") { Some(s) => s, None => "-" }), None => None }
+}

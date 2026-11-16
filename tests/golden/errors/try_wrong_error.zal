@@ -1,0 +1,5 @@
+// expect-error: `?` needs the enclosing function to return Result with the same error type
+module t
+fn g() -> Result<Int, Str> { Ok(1) }
+fn f() -> Result<Int, Int> { let x = g()? 
+ Ok(x) }

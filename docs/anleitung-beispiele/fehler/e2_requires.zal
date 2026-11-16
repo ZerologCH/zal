@@ -1,0 +1,5 @@
+module fehler.e2
+extern tool build(repo: Str) -> Result<Str, Str>
+task t(r: Str) -> Result<Str, Str> {
+    build(r)
+}

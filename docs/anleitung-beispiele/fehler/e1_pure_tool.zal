@@ -1,0 +1,8 @@
+module fehler.e1
+extern tool build(repo: Str) -> Result<Str, Str>
+fn f() -> Str {
+    "x"
+}
+fn g(r: Str) -> Result<Str, Str> {
+    build(r)
+}

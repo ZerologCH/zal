@@ -1,0 +1,5 @@
+module fehler.e11
+type P = { x: Int }
+fn f(p: P) -> Int {
+    p.z
+}

@@ -1,0 +1,3 @@
+module d44
+
+task ret2(a: Int) -> (Int, Str) { (a, "x") }

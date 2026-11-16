@@ -1,0 +1,14 @@
+[package]
+name = "zal-vm"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+zal-ir = { path = "../ir" }
+serde_json.workspace = true
+
+[dev-dependencies]
+zal-compiler = { path = "../compiler" }
+
+[features]
+profiling = []

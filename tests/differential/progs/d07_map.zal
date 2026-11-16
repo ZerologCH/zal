@@ -1,0 +1,60 @@
+module d07
+
+fn build() -> Map<Int> {
+    let mut m: Map<Int> = map_new()
+    m = map_set(m, "zeta", 1)
+    m = map_set(m, "alpha", 2)
+    m = map_set(m, "mid", 3)
+    m = map_set(m, "alpha", 20)
+    m
+}
+fn keys_order() -> List<Str> { map_keys(build()) }
+fn lookups() -> List<Option<Int>> {
+    let m = build()
+    [map_get(m, "alpha"), map_get(m, "nope"), if map_has(m, "zeta") { Some(1) } else { None }, if map_has(m, "x") { Some(1) } else { None }, Some(len(m))]
+}
+fn capacity() -> List<Str> {
+    let mut m: Map<Str> = map_with_capacity(100)
+    m = map_set(m, "b", "B")
+    m = map_set(m, "a", "A")
+    push(map_keys(m), str(len(m)))
+}
+fn value_semantics() -> List<Map<Int>> {
+    let a = build()
+    let b = map_set(a, "extra", 99)
+    [a, b]
+}
+fn lists_in_map() -> Map<List<Int>> {
+    let mut m: Map<List<Int>> = map_new()
+    m = map_set(m, "x", [1, 2])
+    m = map_set(m, "a", [])
+    m
+}
+fn empty_map() -> Map<Int> {
+    let m: Map<Int> = map_new()
+    map_set(m, "n", len(m) + len(map_keys(m)))
+}
+fn many(n: Int) -> Str {
+    let mut m: Map<Int> = map_new()
+    for i in range(n) { m = map_set(m, "k" + str(i), i) }
+    let ks = map_keys(m)
+    str(len(m)) + ks[0] + ks[n - 1]
+}
+fn unicode_keys() -> List<Str> {
+    let mut m: Map<Int> = map_new()
+    m = map_set(m, "é", 1)
+    m = map_set(m, "z", 2)
+    m = map_set(m, "A", 3)
+    m = map_set(m, "", 4)
+    map_keys(m)
+}
+
+task t_build() -> Map<Int> { build() }
+task t_keys() -> List<Str> { keys_order() }
+task t_lookups() -> List<Option<Int>> { lookups() }
+task t_capacity() -> List<Str> { capacity() }
+task t_value_semantics() -> List<Map<Int>> { value_semantics() }
+task t_lists() -> Map<List<Int>> { lists_in_map() }
+task t_empty() -> Map<Int> { empty_map() }
+task t_many(n: Int) -> Str { many(n) }
+task t_unicode_keys() -> List<Str> { unicode_keys() }

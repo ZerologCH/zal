@@ -1,0 +1,7 @@
+[package]
+name = "zal-compiler"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+zal-ir = { path = "../ir" }

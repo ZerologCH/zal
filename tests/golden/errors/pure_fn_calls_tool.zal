@@ -1,0 +1,4 @@
+// expect-error: `fn f` is pure; only a `task` or `workflow` may use effects
+module t
+extern tool build(r: Str) -> Result<Str, Str>
+fn f() -> Result<Str, Str> { build("x") }

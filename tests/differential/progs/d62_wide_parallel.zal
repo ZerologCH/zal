@@ -1,0 +1,31 @@
+module d62
+
+extern tool echo(x: Str) -> Result<Str, Str>
+
+task one(x: Str) -> Result<Str, Str> requires tool.echo {
+    echo(x)
+}
+
+// Ten same-typed branches (wide path, single await) and ten mixed-type branches.
+task same() -> Result<Str, Str> requires tool.echo {
+    let (a, b, c, d, e, f, g, h, i, j) = parallel {
+        one("a"), one("b"), one("c"), one("d"), one("e"),
+        one("f"), one("g"), one("h"), one("i"), one("j")
+    }
+    Ok(a? + b? + c? + d? + e? + f? + g? + h? + i? + j?)
+}
+
+task mixed() -> Result<Str, Str> requires tool.echo {
+    let (a, n, b, m, c, k, d, l, e, z) = parallel {
+        one("a"), 1, one("b"), 2, one("c"), 3, one("d"), 4, one("e"), "z"
+    }
+    Ok(a? + str(n + m + k + l) + b? + c? + d? + e? + z)
+}
+
+task failing() -> Result<Str, Str> requires tool.echo {
+    let (a, b, c, d, e, f, g, h, i, j) = parallel {
+        one("a"), one("b"), one("c"), one("d"), one("e"),
+        one("f"), one("g"), one("h"), one("i"), one("j")
+    }
+    Ok(a? + j?)
+}

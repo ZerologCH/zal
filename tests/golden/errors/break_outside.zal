@@ -1,0 +1,3 @@
+// expect-error: `break`/`continue` outside a loop
+module t
+fn f() { break }

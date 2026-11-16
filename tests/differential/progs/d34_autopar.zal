@@ -1,0 +1,43 @@
+module d34
+
+extern tool read(path: Str) -> Result<Str, Str> readonly
+extern tool write(path: Str) -> Result<Str, Str>
+
+task independent() -> Result<Str, Str> requires tool.read {
+    let a = read("a")?
+    let b = read("b")?
+    let c = read("c")?
+    let d = read("d")?
+    Ok(a + b + c + d)
+}
+task dependent() -> Result<Str, Str> requires tool.read {
+    let a = read("a")?
+    let b = read(a)?
+    Ok(b)
+}
+task writes() -> Result<Str, Str> requires tool.write {
+    let a = write("a")?
+    let b = write("b")?
+    Ok(a + b)
+}
+task looped(files: List<Str>) -> Result<Int, Str> requires tool.read {
+    let mut acc: List<Str> = []
+    for f in files { acc = push(acc, read(f)?) }
+    let mut total = 0
+    for x in acc { total = total + len(x) }
+    Ok(total * 100 + len(acc))
+}
+task order(files: List<Str>) -> Result<Str, Str> requires tool.read {
+    let mut acc: List<Str> = []
+    for f in files { acc = push(acc, read(f)?) }
+    let mut s = ""
+    for x in acc { s = s + x }
+    Ok(s)
+}
+workflow budgeted() -> Result<Str, Str> requires tool.read budget { max_tool_calls: 3 } {
+    let a = read("a")?
+    let b = read("b")?
+    let c = read("c")?
+    let d = read("d")?
+    Ok(a + b + c + d)
+}

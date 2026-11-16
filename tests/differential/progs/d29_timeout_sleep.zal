@@ -1,0 +1,31 @@
+module d29
+
+extern tool slow(x: Int) -> Int
+
+task t_timeout(limit: Dur) -> Int requires tool.slow {
+    match timeout(limit) { slow(7) } { Some(v) => v, None => -1 }
+}
+task t_timeout_sleep(limit: Dur, nap: Dur) -> Bool {
+    match timeout(limit) { sleep(nap)
+        true } { Some(b) => b, None => false }
+}
+task t_sleep() -> Int { sleep(5ms)
+    sleep(1ms)
+    1 }
+task t_zero_timeout() -> Option<Int> { timeout(0ms) { 5 } }
+task t_pure_timeout() -> Option<Int> { timeout(1s) { 5 } }
+task t_nested_timeout() -> Int {
+    let r = timeout(500ms) {
+        let inner = timeout(10ms) { sleep(200ms)
+            1 }
+        match inner { Some(v) => v, None => 99 }
+    }
+    match r { Some(v) => v, None => -1 }
+}
+task t_timeout_then_continue() -> Int requires tool.slow {
+    let a = timeout(10ms) { slow(1) }
+    let b = timeout(1s) { slow(2) }
+    (match a { Some(v) => v, None => 100 }) + (match b { Some(v) => v, None => 200 })
+}
+task t_sleep_zero() -> Int { sleep(0ms)
+    4 }

@@ -1,0 +1,15 @@
+module d03
+
+fn boom() -> Bool { 1 / 0 == 0 }
+fn and_sc(a: Bool) -> Bool { a && boom() }
+fn or_sc(a: Bool) -> Bool { a || boom() }
+fn table(a: Bool, b: Bool) -> List<Bool> { [a && b, a || b, !a, !(a && b) == (!a || !b)] }
+fn prec(a: Bool, b: Bool, c: Bool) -> Bool { a || b && c }
+fn eq(a: Bool, b: Bool) -> List<Bool> { [a == b, a != b] }
+
+task t_and_sc(a: Bool) -> Bool { and_sc(a) }
+task t_or_sc(a: Bool) -> Bool { or_sc(a) }
+task t_table(a: Bool, b: Bool) -> List<Bool> { table(a, b) }
+task t_prec(a: Bool, b: Bool, c: Bool) -> Bool { prec(a, b, c) }
+task t_eq(a: Bool, b: Bool) -> List<Bool> { eq(a, b) }
+task t_not_not(a: Bool) -> Bool { !!a }

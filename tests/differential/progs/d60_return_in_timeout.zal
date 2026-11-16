@@ -1,0 +1,3 @@
+module d60
+
+task t_timeout_ret() -> Option<Int> { timeout(1s) { return 3 } }

@@ -1,0 +1,38 @@
+module agents.eval_dag
+
+// Build pipeline: build once, test and lint in parallel, package only if both pass.
+type Artifact = { id: Str, size: Int }
+
+extern tool build(repo: Str) -> Result<Artifact, Str>
+extern tool test(a: Artifact) -> Result<Bool, Str>
+extern tool lint(a: Artifact) -> Result<Bool, Str>
+extern tool package(a: Artifact) -> Result<Str, Str>
+
+workflow pipeline(repo: Str) -> Result<Str, Str>
+    requires tool.build, tool.test, tool.lint, tool.package
+    budget { timeout: 10min, max_parallel: 2, max_tool_calls: 10 }
+{
+    let a = build(repo)?
+
+    // test and lint are independent of each other: run them in parallel.
+    let (t, l) = parallel {
+        test(a)
+        lint(a)
+    }
+
+    // A tool Err counts as a failed check.
+    let tests_ok = match t {
+        Ok(v) => v
+        Err(_) => false
+    }
+    let lint_ok = match l {
+        Ok(v) => v
+        Err(_) => false
+    }
+
+    ensure tests_ok, "tests failed"
+    ensure lint_ok, "lint failed"
+
+    let id = package(a)?
+    Ok(id)
+}

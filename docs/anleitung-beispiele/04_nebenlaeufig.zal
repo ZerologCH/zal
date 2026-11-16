@@ -1,0 +1,75 @@
+module anleitung.nebenlaeufig
+
+extern tool fetch(url: Str) -> Result<Str, Str> readonly
+extern tool flaky(x: Str) -> Result<Str, Str>
+
+// parallel: alle Zweige laufen, das Ergebnis ist ein Tupel.
+task beide(a: Str, b: Str) -> Result<Int, Str>
+    requires tool.fetch
+{
+    let (x, y) = parallel {
+        fetch(a)
+        fetch(b)
+    }
+    let s1 = x?
+    let s2 = y?
+    Ok(len(s1) + len(s2))
+}
+
+// race: der erste fertige Zweig gewinnt, die anderen werden abgebrochen.
+task schnellster(a: Str, b: Str) -> Result<Str, Str>
+    requires tool.fetch
+{
+    race {
+        fetch(a)
+        fetch(b)
+    }
+}
+
+// timeout: Some(wert) oder None, wenn zu langsam.
+task begrenzt(u: Str) -> Result<Str, Str>
+    requires tool.fetch
+{
+    let r = timeout(2s) { fetch(u) }
+    match r {
+        Some(v) => v
+        None => Err("zu langsam")
+    }
+}
+
+// retry: der Block muss ein Result liefern und wird bei Err wiederholt.
+task mit_retry(x: Str) -> Result<Str, Str>
+    requires tool.flaky
+{
+    retry(3, backoff: 20ms) { flaky(x) }
+}
+
+// spawn / await / join / await_any / cancel / sleep
+task zeug(urls: List<Str>) -> Result<Int, Str>
+    requires tool.fetch
+{
+    let mut ts: List<Task<Result<Str, Str>>> = []
+    for u in urls { ts = push(ts, spawn fetch(u)) }
+    let (k, erstes) = await_any(ts)
+    print("erster fertig: Index " + str(k))
+    let _ = erstes
+    sleep(10ms)
+    let alle = join(ts)
+    let mut n = 0
+    for r in alle { n = n + len(r?) }
+    let extra = spawn fetch("unnoetig")
+    cancel(extra)
+    Ok(n)
+}
+
+workflow main() -> Result<Int, Str>
+    requires tool.fetch, tool.flaky
+    budget { timeout: 30s, max_parallel: 4, max_tool_calls: 50 }
+{
+    let n = beide("a", "bb")?
+    let s = schnellster("x", "y")?
+    let t = begrenzt("z")?
+    let f = mit_retry("q")?
+    let z = zeug(["u1", "u2", "u3"])?
+    Ok(n + len(s) + len(t) + len(f) + z)
+}

@@ -1,0 +1,54 @@
+module agents.skeleton
+
+// Records are nominal: fields are named, constructed with `Name { .. }`.
+type Job = { id: Str, retries: Int }
+
+enum Mode { Fast, Safe(Int) }
+
+// `fn` is pure: no `requires`, no tool calls. `print` is allowed for debugging.
+fn label(t: Job) -> Str {
+    print("labelling " + t.id)
+    "task " + t.id + " (" + str(t.retries) + " retries)"
+}
+
+fn speed(m: Mode) -> Int {
+    match m {
+        Mode.Fast => 1
+        Mode.Safe(n) => n
+    }
+}
+
+fn first_even(xs: List<Int>) -> Option<Int> {
+    for x in xs {
+        if x % 2 == 0 { return Some(x) }
+    }
+    None
+}
+
+fn parse(s: Str) -> Result<Int, Str> {
+    ensure len(s) > 0, "empty input"
+    Ok(len(s))
+}
+
+// `?` returns the Err early; the enclosing fn must return Result<_, Str>.
+fn total(a: Str, b: Str) -> Result<Int, Str> {
+    let x = parse(a)?
+    let y = parse(b)?
+    Ok(x + y)
+}
+
+fn summary() -> Int {
+    let t = Job { id: "t1", retries: 2 }
+    let v = match first_even([1, 3, 4]) {
+        Some(n) => n
+        None => 0
+    }
+    label(t)
+    v + speed(Mode.Safe(5))
+}
+
+test "pure helpers" {
+    assert speed(Mode.Fast) == 1, "fast is 1"
+    let r = total("ab", "c")
+    assert match r { Ok(n) => n == 3, Err(_) => false }, "lengths add up"
+}

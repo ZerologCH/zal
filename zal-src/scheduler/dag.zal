@@ -1,0 +1,130 @@
+module scheduler.dag
+
+// A unit of work in a task graph. `deps` name other nodes by id.
+type Node = { id: Str, tool: Str, input: Str, deps: List<Str>, max_attempts: Int }
+type NodeResult = { id: Str, output: Str, attempts: Int }
+
+// Generic tool-proxy entry point. The host routes `tool` to the real adapter;
+// the broker authorizes `tool.dispatch` on every single call.
+extern tool dispatch(tool: Str, node: Str, input: Str) -> Result<Str, Str>
+
+// Retry policy lives here, in ZAL, not in the VM: immediate re-dispatch up to
+// `max_attempts`, the error of the last attempt wins.
+task run_node(n: Node, input: Str) -> Result<NodeResult, Str>
+    requires tool.dispatch
+{
+    let mut attempt = 0
+    while true {
+        attempt = attempt + 1
+        match dispatch(n.tool, n.id, input) {
+            Ok(out) => { return Ok(NodeResult { id: n.id, output: out, attempts: attempt }) }
+            Err(e) => {
+                if attempt >= n.max_attempts {
+                    return Err(n.id + " failed after " + str(attempt) + " attempt(s): " + e)
+                }
+            }
+        }
+    }
+    Err("unreachable")
+}
+
+// A node's input is its own input followed by its dependencies' outputs, in
+// declaration order. Deterministic, so replays see identical inputs.
+// `dep_ix` are the dependencies' node indices (resolved once while planning),
+// `outputs` the outputs of finished nodes by index: no lookups by name.
+fn gather_input(n: Node, dep_ix: List<Int>, outputs: List<Str>) -> Str {
+    let mut s = n.input
+    for j in dep_ix { s = s + "|" + outputs[j] }
+    s
+}
+
+// Kahn scheduler: validates the graph (duplicates, unknown deps, cycles), then
+// runs every ready node concurrently up to `max_parallel`. The first failure
+// cancels all in-flight nodes (structured concurrency) and is returned.
+task run_dag(nodes: List<Node>, max_parallel: Int) -> Result<Map<NodeResult>, Str>
+    requires tool.dispatch
+{
+    ensure max_parallel > 0, "max_parallel must be positive"
+    let mut index: Map<Int> = map_with_capacity(len(nodes))
+    let mut pending: List<Int> = []
+    let mut outputs: List<Str> = []
+    let mut dependents: List<List<Int>> = []
+    // Shared empty list: a node's dependents list is allocated on first use.
+    let none: List<Int> = []
+    let mut ready: List<Int> = []
+    let mut i = 0
+    for n in nodes {
+        let id = n.id
+        // One hash per node: a duplicate id leaves the map size unchanged.
+        index = map_set(index, id, i)
+        ensure len(index) == i + 1, "duplicate node id " + id
+        let nd = len(n.deps)
+        pending = push(pending, nd)
+        if nd == 0 { ready = push(ready, i) }
+        dependents = push(dependents, none)
+        outputs = push(outputs, "")
+        i = i + 1
+    }
+
+    let mut dep_ix: List<List<Int>> = []
+    i = 0
+    for n in nodes {
+        let mut mine: List<Int> = []
+        for d in n.deps {
+            match map_get(index, d) {
+                Some(j) => {
+                    // Take the list out first, so the push updates it in place.
+                    let mut l = dependents[j]
+                    dependents = set(dependents, j, none)
+                    l = push(l, i)
+                    dependents = set(dependents, j, l)
+                    mine = push(mine, j)
+                }
+                None => { return Err("node " + n.id + " depends on unknown node " + d) }
+            }
+        }
+        dep_ix = push(dep_ix, mine)
+        i = i + 1
+    }
+
+    let mut running: List<Task<Result<NodeResult, Str>>> = []
+    let mut running_ix: List<Int> = []
+    let mut done: Map<NodeResult> = map_with_capacity(len(nodes))
+    let mut finished = 0
+    while finished < len(nodes) {
+        while len(ready) > 0 && len(running) < max_parallel {
+            let top = len(ready) - 1
+            let r = ready[top]
+            ready = remove(ready, top)
+            let nd = nodes[r]
+            let mut input = nd.input
+            for j in dep_ix[r] { input = input + "|" + outputs[j] }
+            running = push(running, spawn run_node(nd, input))
+            running_ix = push(running_ix, r)
+        }
+        if len(running) == 0 {
+            return Err("cycle: " + str(len(nodes) - finished) + " node(s) can never become ready")
+        }
+        let (k, res) = await_any(running)
+        let f = running_ix[k]
+        running = remove(running, k)
+        running_ix = remove(running_ix, k)
+        match res {
+            Ok(nr) => {
+                outputs = set(outputs, f, nr.output)
+                done = map_set(done, nr.id, nr)
+                finished = finished + 1
+                for j in dependents[f] {
+                    let p = pending[j] - 1
+                    pending = set(pending, j, p)
+                    if p == 0 { ready = push(ready, j) }
+                }
+            }
+            Err(e) => {
+                for t in running { cancel(t) }
+                return Err(e)
+            }
+        }
+    }
+    Ok(done)
+}

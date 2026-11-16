@@ -1,0 +1,7 @@
+module d49
+
+enum Color { Red, Green, Blue }
+enum Shape { Dot, Circle(Int) }
+
+task t_color(c: Color) -> Color { c }
+task t_shape(s: Shape) -> Shape { s }

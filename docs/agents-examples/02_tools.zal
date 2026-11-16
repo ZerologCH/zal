@@ -1,0 +1,26 @@
+module agents.tools
+
+// A tool is a host operation. Its own failures are ordinary Err values.
+extern tool read_file(path: Str) -> Result<Str, Str> readonly
+
+// No `readonly`: this call changes state, so ZAL never reorders it.
+extern tool write_file(path: Str, body: Str) -> Result<Unit, Str>
+
+// A task may use effects and must list every effect it reaches.
+task copy_one(src: Str, dst: Str) -> Result<Int, Str>
+    requires tool.read_file, tool.write_file
+{
+    let body = read_file(src)?
+    write_file(dst, body)?
+    Ok(len(body))
+}
+
+// Only a workflow can declare a budget. `timeout` is a duration literal.
+workflow copy_all(a: Str, b: Str) -> Result<Int, Str>
+    requires tool.read_file, tool.write_file
+    budget { timeout: 2min, max_parallel: 2, max_tool_calls: 10 }
+{
+    let n1 = copy_one(a, "out/" + a)?
+    let n2 = copy_one(b, "out/" + b)?
+    Ok(n1 + n2)
+}

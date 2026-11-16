@@ -1,0 +1,12 @@
+module d58
+
+fn loop_ret(n: Int) -> Int {
+    let mut i = 0
+    while true {
+        if i == n { return i * 3 }
+        i = i + 1
+    }
+    -1
+}
+
+task t_loop_ret(n: Int) -> Int { loop_ret(n) }

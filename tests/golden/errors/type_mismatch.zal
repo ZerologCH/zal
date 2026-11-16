@@ -1,0 +1,3 @@
+// expect-error: expected `Int`, found `Str`
+module t
+fn f() -> Int { "nope" }

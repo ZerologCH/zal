@@ -1,0 +1,3 @@
+module d45
+
+task ret3(a: Int) -> (Int, Str, Bool) { (a, "x", true) }

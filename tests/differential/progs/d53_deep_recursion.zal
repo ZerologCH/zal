@@ -1,0 +1,7 @@
+module d53
+
+fn depth(n: Int) -> Int { if n == 0 { 0 } else { 1 + depth(n - 1) } }
+fn tail(n: Int, acc: Int) -> Int { if n == 0 { acc } else { tail(n - 1, acc + 1) } }
+
+task t_depth(n: Int) -> Int { depth(n) }
+task t_tail(n: Int) -> Int { tail(n, 0) }

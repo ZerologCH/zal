@@ -1,0 +1,3 @@
+// expect-error: only a `workflow` can declare a budget
+module t
+task t1() budget { max_parallel: 2 } { }

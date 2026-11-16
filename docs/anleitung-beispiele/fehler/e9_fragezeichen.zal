@@ -1,0 +1,8 @@
+module fehler.e9
+fn teile(a: Int) -> Result<Int, Str> {
+    Ok(a)
+}
+fn f() -> Int {
+    let x = teile(1)?
+    x
+}

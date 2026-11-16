@@ -1,0 +1,8 @@
+module examples.jsonl_demo
+
+extern tool upper(text: Str) -> Result<Str, Str>
+
+workflow demo() -> Result<Str, Str> requires tool.upper {
+    let (a, b) = parallel { upper("left"), upper("right") }
+    Ok(a? + "+" + b?)
+}

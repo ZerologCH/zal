@@ -1,0 +1,22 @@
+module d50
+
+type Pt = { x: Int, y: Int }
+
+task e_int(x: Int) -> Int { x }
+task e_str(x: Str) -> Str { x }
+task e_bool(x: Bool) -> Bool { x }
+task e_dur(x: Dur) -> Dur { x }
+task e_list(x: List<Int>) -> List<Int> { x }
+task e_list_str(x: List<Str>) -> List<Str> { x }
+task e_map(x: Map<Int>) -> Map<Int> { x }
+task e_opt(x: Option<Int>) -> Option<Int> { x }
+task e_opt_str(x: Option<Str>) -> Option<Str> { x }
+task e_res(x: Result<Int, Str>) -> Result<Int, Str> { x }
+task e_pt(x: Pt) -> Pt { x }
+task e_pts(x: List<Pt>) -> List<Pt> { x }
+task e_nested(x: List<List<Int>>) -> List<List<Int>> { x }
+task e_unit() -> Unit { () }
+task e_two(a: Int, b: Str) -> Str { b + str(a) }
+task e_none() -> Option<Pt> { None }
+task e_list_opt(x: List<Option<Int>>) -> List<Option<Int>> { x }
+task e_map_list(x: Map<List<Int>>) -> Map<List<Int>> { x }

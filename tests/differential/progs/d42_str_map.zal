@@ -1,0 +1,3 @@
+module d42
+
+task s_map() -> Str { str(map_set(map_set(map_new(), "b", 2), "a", 1)) }

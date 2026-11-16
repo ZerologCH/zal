@@ -1,0 +1,57 @@
+module d05
+
+fn build(n: Int) -> List<Int> {
+    let mut xs: List<Int> = []
+    for i in range(n) { xs = push(xs, i * i) }
+    xs
+}
+fn updated() -> List<List<Int>> {
+    let a = [1, 2, 3, 4]
+    let b = set(a, 1, 20)
+    let c = remove(b, 0)
+    [a, c, [len(b)]]
+}
+fn aliasing() -> List<List<Int>> {
+    let a = [1, 2, 3]
+    let b = push(a, 4)
+    let c = push(a, 5)
+    [b, c]
+}
+fn getters(i: Int) -> Option<Int> {
+    let xs = [10, 20, 30]
+    get(xs, i)
+}
+fn strs() -> List<Str> { push(push([], "b"), "a") }
+fn nested() -> List<List<Int>> { [[1], [], [2, 3]] }
+fn mutate_in_loop() -> List<Int> {
+    let mut xs = [0, 0, 0]
+    for i in range(3) { xs = set(xs, i, i + 10) }
+    xs = remove(xs, 1)
+    xs
+}
+
+task t_build(n: Int) -> List<Int> { build(n) }
+task t_updated() -> List<List<Int>> { updated() }
+task t_aliasing() -> List<List<Int>> { aliasing() }
+task t_getters(i: Int) -> Option<Int> { getters(i) }
+task t_strs() -> List<Str> { strs() }
+task t_nested() -> List<List<Int>> { nested() }
+task t_mutate() -> List<Int> { mutate_in_loop() }
+task t_index(i: Int) -> Int { let xs = [5, 6, 7]
+    xs[i] }
+task t_set(i: Int) -> List<Int> { set([1, 2, 3], i, 9) }
+task t_remove(i: Int) -> List<Int> { remove([1, 2, 3], i) }
+task t_range(n: Int) -> List<Int> { range(n) }
+task t_empty() -> Int { let e: List<Int> = []
+    len(e) + len(push(e, 1)) }
+task t_remove_all() -> List<Int> {
+    let mut xs = [1, 2, 3]
+    xs = remove(xs, 2)
+    xs = remove(xs, 1)
+    xs = remove(xs, 0)
+    xs
+}
+task t_remove_empty() -> List<Int> {
+    let xs: List<Int> = []
+    remove(xs, 0)
+}

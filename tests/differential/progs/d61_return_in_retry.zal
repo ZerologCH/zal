@@ -1,0 +1,3 @@
+module d61
+
+task t_ret_in_retry() -> Result<Int, Str> { retry(2) { return Ok(5) } }

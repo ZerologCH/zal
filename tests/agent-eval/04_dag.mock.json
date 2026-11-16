@@ -1,0 +1,1 @@
+{"tools":{"build":{"result":{"ok":{"id":"art","size":3}}},"test":{"result":{"ok":true}},"lint":{"result":{"ok":true}},"package":{"result":{"ok":"pkg-1"}}}}

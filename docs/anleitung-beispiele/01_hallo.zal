@@ -1,0 +1,12 @@
+module anleitung.hallo
+
+// `fn` ist rein: keine Tools, kein `requires`. `print` ist zum Debuggen erlaubt.
+fn gruss(name: Str) -> Str {
+    "Hallo, " + name + "!"
+}
+
+fn main() -> Str {
+    let text = gruss("Welt")
+    print(text)
+    text
+}

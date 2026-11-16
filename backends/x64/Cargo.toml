@@ -1,0 +1,14 @@
+[package]
+name = "zal-backend-x64"
+version.workspace = true
+edition.workspace = true
+description = "ZAL backend B: own x86-64 encoder, JIT memory manager and ELF64 object writer"
+
+[dependencies]
+zal-ir = { path = "../../ir" }
+zal-vm = { path = "../../vm" }
+libc = "0.2"
+
+[dev-dependencies]
+zal-compiler = { path = "../../compiler" }
+serde_json.workspace = true

@@ -1,0 +1,52 @@
+module d11
+
+fn swap(p: (Int, Str)) -> (Str, Int) { (p.1, p.0) }
+fn divmod(a: Int, b: Int) -> (Int, Int) { (a / b, a % b) }
+fn triple() -> (Int, Str, Bool) { (1, "two", true) }
+fn quad() -> (Int, Int, Int, Int) { (1, 2, 3, 4) }
+fn destr(a: Int, b: Int) -> Int { let (q, r) = divmod(a, b)
+    q * 100 + r }
+fn nested_idx() -> Int { let t = ((1, 2), (3, 4))
+    t.0.1 + t.1.0 }
+fn unit_tuple() -> Unit { () }
+fn clamp(n: Int, lo: Int, hi: Int) -> Int { if n < lo { lo } else { if n > hi { hi } else { n } } }
+fn if_unit(n: Int) -> Int {
+    let mut c = 0
+    if n > 0 { c = c + 1 }
+    if n > 5 { c = c + 10 }
+    c
+}
+fn if_in_expr(n: Int) -> Int { 1 + (if n > 0 { 10 } else { 20 }) * 2 }
+fn block_expr(n: Int) -> Int { let a = { let b = n + 1
+    b * 2 }
+    a + 1 }
+fn shadow(n: Int) -> Int { let x = n
+    let x = x * 2
+    let x = x + 1
+    x }
+fn list_of_tuples_sum() -> Int {
+    let xs = [(1, "a"), (2, "bb")]
+    let mut t = 0
+    for p in xs { t = t + p.0 * len(p.1) }
+    t
+}
+
+task t_swap(n: Int, s: Str) -> Str { let (a, b) = swap((n, s))
+    a + str(b) }
+task t_divmod(a: Int, b: Int) -> Str { let (q, r) = divmod(a, b)
+    str(q) + "," + str(r) }
+task t_destr(a: Int, b: Int) -> Int { destr(a, b) }
+task t_nested_idx() -> Int { nested_idx() }
+task t_unit() -> Unit { unit_tuple() }
+task t_clamp(n: Int, lo: Int, hi: Int) -> Int { clamp(n, lo, hi) }
+task t_if_unit(n: Int) -> Int { if_unit(n) }
+task t_if_expr(n: Int) -> Int { if_in_expr(n) }
+task t_block(n: Int) -> Int { block_expr(n) }
+task t_shadow(n: Int) -> Int { shadow(n) }
+task t_list_tuples() -> Int { list_of_tuples_sum() }
+task t_destr_triple() -> Str { let (a, b, c) = triple()
+    str(a) + b + str(c) }
+task t_destr_quad() -> Int { let (a, b, c, d) = quad()
+    a * 1000 + b * 100 + c * 10 + d }
+task t_tuple_field_chain() -> Int { let t = triple()
+    t.0 + len(t.1) }

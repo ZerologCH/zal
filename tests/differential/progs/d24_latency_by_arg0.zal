@@ -1,0 +1,9 @@
+module d24
+
+extern tool work(name: Str) -> Str
+
+task t_race() -> Str requires tool.work { race { work("slow"), work("fast") } }
+task t_parallel_sum() -> Int requires tool.work {
+    let (a, b) = parallel { work("slow"), work("fast") }
+    len(a) + len(b)
+}

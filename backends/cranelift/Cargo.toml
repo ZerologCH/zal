@@ -1,0 +1,19 @@
+[package]
+name = "zal-backend-cranelift"
+version.workspace = true
+edition.workspace = true
+description = "ZAL backend A: verified IR v1 -> machine code via Cranelift (JIT and AOT objects)"
+
+[dependencies]
+zal-ir = { path = "../../ir" }
+zal-vm = { path = "../../vm" }
+cranelift-codegen = "=0.137.1"
+cranelift-frontend = "=0.137.1"
+cranelift-module = "=0.137.1"
+cranelift-jit = "=0.137.1"
+cranelift-object = "=0.137.1"
+cranelift-native = "=0.137.1"
+
+[dev-dependencies]
+zal-compiler = { path = "../../compiler" }
+serde_json.workspace = true

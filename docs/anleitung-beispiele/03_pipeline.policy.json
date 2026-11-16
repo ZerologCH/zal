@@ -1,0 +1,2 @@
+{ "grant": ["tool.build", "tool.test", "tool.deploy"],
+  "caps": { "timeout_ms": 60000, "max_parallel": 4, "max_tool_calls": 50 } }

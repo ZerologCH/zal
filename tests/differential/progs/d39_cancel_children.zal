@@ -1,0 +1,46 @@
+module d39
+
+extern tool count(x: Int) -> Int
+
+workflow w_children_cancelled() -> Int requires tool.count budget { max_tool_calls: 5 } {
+    let t = spawn {
+        let inner = spawn count(1)
+        sleep(1ms)
+        7
+    }
+    await t
+}
+task child_spawner() -> Int requires tool.count {
+    let c = spawn { sleep(100ms)
+        count(9) }
+    1
+}
+workflow w_unawaited_child() -> Int requires tool.count budget { max_tool_calls: 1 } {
+    let r = child_spawner()
+    sleep(150ms)
+    r
+}
+task t_cancel_cascades() -> Int requires tool.count {
+    let outer = spawn {
+        let inner = spawn { sleep(50ms)
+            count(1) }
+        await inner
+    }
+    sleep(5ms)
+    cancel(outer)
+    let r = timeout(100ms) { await outer }
+    match r { Some(v) => v, None => -1 }
+}
+task t_await_cancelled_child() -> Int requires tool.count {
+    let outer = spawn { let inner = spawn { sleep(50ms)
+        1 }
+        cancel(inner)
+        await inner }
+    await outer
+}
+task t_losers_cancelled() -> Int requires tool.count {
+    let r = race { { sleep(200ms)
+        count(5) }, count(6) }
+    sleep(250ms)
+    r
+}

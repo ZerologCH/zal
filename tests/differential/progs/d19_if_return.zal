@@ -1,0 +1,5 @@
+module d19
+
+fn if_with_return(n: Int) -> Int { if n == 0 { return 7 } else { n * 2 } }
+
+task t_if_ret(n: Int) -> Int { if_with_return(n) }

@@ -1,0 +1,6 @@
+module fehler.e8
+fn f() -> Int {
+    let mut m: Map<Int> = map_new()
+    m = map_set(m, "a", 1)
+    map_get(m, "a") + 1
+}

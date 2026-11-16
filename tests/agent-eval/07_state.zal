@@ -1,0 +1,44 @@
+module agent_eval.state
+
+// Job state machine: a Running job gets up to three attempts, then gives up.
+enum State { Queued, Running(Int), Done(Str), Failed(Str) }
+
+fn step(s: State, ok: Bool, out: Str) -> State {
+    match s {
+        State.Queued => State.Running(1)
+        State.Running(n) => if ok {
+            State.Done(out)
+        } else {
+            if n < 3 {
+                State.Running(n + 1)
+            } else {
+                State.Failed("gave up")
+            }
+        }
+        State.Done(v) => s
+        State.Failed(w) => s
+    }
+}
+
+fn describe(s: State) -> Str {
+    match s {
+        State.Queued => "queued"
+        State.Running(n) => "running " + str(n)
+        State.Done(v) => "done: " + v
+        State.Failed(w) => "failed: " + w
+    }
+}
+
+test "three failures give up" {
+    let mut s = State.Queued
+    s = step(s, false, "")
+    s = step(s, false, "")
+    s = step(s, false, "")
+    s = step(s, false, "")
+    assert describe(s) == "failed: gave up", "expected failed: gave up"
+}
+
+task demo() -> Str {
+    let s = step(State.Running(1), true, "x")
+    describe(s)
+}

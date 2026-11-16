@@ -1,0 +1,5 @@
+module fehler.e6
+extern tool build(repo: Str) -> Result<Str, Str>
+task t(r: Str) -> Result<Str, Str> requires tool.build budget { timeout: 5s } {
+    build(r)
+}

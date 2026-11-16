@@ -1,0 +1,6 @@
+{"tools": {
+  "pick1": {"echo_arg": 1},
+  "pick2": {"echo_arg": 2},
+  "res_pick": {"echo_arg": 1},
+  "sfx_first": {"suffix": "+s"}
+}}

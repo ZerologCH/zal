@@ -1,0 +1,44 @@
+module d25
+
+extern tool slow(x: Int) -> Int
+extern tool fastr(x: Int) -> Result<Int, Str>
+
+fn sq(x: Int) -> Int { x * x }
+
+task t_three() -> Int requires tool.slow {
+    let (a, b, c) = parallel { slow(1), slow(2), slow(3) }
+    a * 100 + b * 10 + c
+}
+task t_pure() -> Int {
+    let (a, b) = parallel { sq(3), sq(4) }
+    a + b
+}
+task t_mixed(x: Int) -> Int requires tool.slow {
+    let (a, b, c) = parallel { slow(x), sq(x), 7 }
+    a + b + c
+}
+task t_try_in_branch() -> Result<Int, Str> requires tool.fastr {
+    let (a, b) = parallel { fastr(1), fastr(2) }
+    Ok(a? + b?)
+}
+task t_nested() -> Int requires tool.slow {
+    let (a, b) = parallel { slow(1), { let (c, d) = parallel { slow(2), slow(3) }
+        c + d } }
+    a + b
+}
+task t_capture(x: Int, s: Str) -> Str requires tool.slow {
+    let (a, b) = parallel { slow(x) + len(s), slow(x * 2) }
+    s + str(a) + str(b)
+}
+task t_four() -> Int requires tool.slow {
+    let (a, b, c, d) = parallel { slow(1), slow(2), slow(3), slow(4) }
+    a + b + c + d
+}
+task t_in_loop(n: Int) -> Int requires tool.slow {
+    let mut t = 0
+    for i in range(n) {
+        let (a, b) = parallel { slow(i), slow(i + 1) }
+        t = t + a + b
+    }
+    t
+}

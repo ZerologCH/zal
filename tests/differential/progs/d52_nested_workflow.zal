@@ -1,0 +1,10 @@
+module d52
+
+extern tool ping(x: Int) -> Int
+
+workflow inner() -> Int requires tool.ping budget { max_tool_calls: 1 } { ping(1) + ping(2) + ping(3) }
+workflow outer() -> Int requires tool.ping budget { max_tool_calls: 10 } { inner() + inner() }
+workflow outer_tight() -> Int requires tool.ping budget { max_tool_calls: 4 } { inner() + inner() }
+workflow inner_timeout() -> Int requires tool.ping budget { timeout: 1ms } { ping(1) }
+workflow outer_notimeout() -> Int requires tool.ping { sleep(10ms)
+    inner_timeout() }

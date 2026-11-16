@@ -1,0 +1,12 @@
+module d26
+
+extern tool fast(x: Int) -> Int
+extern tool slow(x: Int) -> Int
+extern tool boom(x: Int) -> Result<Int, Str>
+
+task t_race() -> Int requires tool.fast, tool.slow { race { slow(1), fast(2) } }
+task t_race3() -> Int requires tool.fast, tool.slow { race { slow(1), slow(3), fast(2) } }
+task t_race_pure() -> Int { race { 1, 2 } }
+task t_race_err() -> Result<Int, Str> requires tool.boom, tool.slow { race { boom(1), boom(2) } }
+task t_race_nested() -> Int requires tool.fast, tool.slow { race { slow(9), race { slow(8), fast(7) } } }
+task t_race_single() -> Int requires tool.slow { race { slow(5) } }

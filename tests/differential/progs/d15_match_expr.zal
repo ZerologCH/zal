@@ -1,0 +1,39 @@
+module d15
+
+fn idi(n: Int) -> Int { n }
+fn ids(s: Str) -> Str { s }
+fn idb(b: Bool) -> Bool { b }
+fn ido(o: Option<Int>) -> Option<Int> { o }
+fn idr(r: Result<Int, Str>) -> Result<Int, Str> { r }
+fn idor(o: Option<Result<Int, Str>>) -> Option<Result<Int, Str>> { o }
+fn idr2(r: Result<Int, Str>) -> Result<Int, Str> { r }
+fn int_match(n: Int) -> Str {
+    match idi(n) { 0 => "zero", 1 => "one", -1 => "minus one", x => "other " + str(x) }
+}
+fn str_match(s: Str) -> Int { match ids(s) { "a" => 1, "b" => 2, "" => 0, _ => -1 } }
+fn bool_match(b: Bool) -> Str { match idb(b) { true => "T", false => "F" } }
+fn opt_match(o: Option<Int>) -> Int { match ido(o) { Some(v) => v, None => 0 } }
+fn res_match(r: Result<Int, Str>) -> Str { match idr(r) { Ok(v) => str(v), Err(e) => e } }
+fn bind_all(n: Int) -> Int { match idi(n) { x => x + 1 } }
+fn nested_match(o: Option<Result<Int, Str>>) -> Str {
+    match idor(o) {
+        Some(r) => match idr2(r) { Ok(v) => "v" + str(v), Err(e) => "e" + e },
+        None => "none",
+    }
+}
+fn match_in_loop(xs: List<Int>) -> Int {
+    let mut t = 0
+    for x in xs { t = t + match idi(x) { 0 => 100, 1 => 10, _ => 1 } }
+    t
+}
+fn match_str_len(s: Str) -> Int { match len(s) { 0 => 0, 1 => 1, _ => 2 } }
+
+task t_int(n: Int) -> Str { int_match(n) }
+task t_str(s: Str) -> Int { str_match(s) }
+task t_bool(b: Bool) -> Str { bool_match(b) }
+task t_opt(o: Option<Int>) -> Int { opt_match(o) }
+task t_res(r: Result<Int, Str>) -> Str { res_match(r) }
+task t_bind(n: Int) -> Int { bind_all(n) }
+task t_nested(o: Option<Result<Int, Str>>) -> Str { nested_match(o) }
+task t_loop(xs: List<Int>) -> Int { match_in_loop(xs) }
+task t_strlen(s: Str) -> Int { match_str_len(s) }

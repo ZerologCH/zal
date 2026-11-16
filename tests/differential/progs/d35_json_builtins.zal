@@ -1,0 +1,14 @@
+module d35
+
+fn q(s: Str) -> Str { json_str(s) }
+fn field(doc: Str, f: Str) -> Option<Str> { json_get_str(doc, f) }
+
+task t_q(s: Str) -> Str { q(s) }
+task t_q_lit() -> Str { json_str("a\"b\\c\nd\té") }
+task t_get() -> Option<Str> { field("{\"name\": \"zal\", \"n\": 3}", "name") }
+task t_get_missing() -> Option<Str> { field("{\"name\": \"zal\"}", "other") }
+task t_get_nonstr() -> Option<Str> { field("{\"n\": 3}", "n") }
+task t_get_badjson() -> Option<Str> { field("not json", "x") }
+task t_get_nested() -> Option<Str> { field("{\"a\": {\"b\": \"c\"}}", "a") }
+task t_roundtrip(s: Str) -> Option<Str> { field("{\"k\": " + json_str(s) + "}", "k") }
+task t_now() -> Bool { now_ms() > 1000000000000 }

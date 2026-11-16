@@ -1,0 +1,4 @@
+// expect-error: is not exhaustive
+module t
+enum Color { Red, Green, Blue }
+fn f(c: Color) -> Int { match c { Color.Red => 1, Color.Green => 2 } }

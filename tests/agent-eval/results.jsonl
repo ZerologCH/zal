@@ -1,0 +1,8 @@
+{"task":"01_summarise","model":"haiku","first_check_ok":true,"checks_until_ok":1,"run_ok":true,"errors":[]}
+{"task":"03_parallel","model":"haiku","first_check_ok":true,"checks_until_ok":1,"run_ok":true,"errors":[]}
+{"task":"02_retry","model":"haiku","first_check_ok":true,"checks_until_ok":1,"run_ok":true,"errors":[]}
+{"task":"04_dag","model":"haiku","first_check_ok":true,"checks_until_ok":1,"run_ok":true,"errors":[]}
+{"task":"05_map","model":"haiku","first_check_ok":true,"checks_until_ok":1,"run_ok":true,"errors":[]}
+{"task":"06_race","model":"haiku","first_check_ok":true,"checks_until_ok":1,"run_ok":true,"errors":[]}
+{"task":"07_state","model":"haiku","first_check_ok":true,"checks_until_ok":1,"run_ok":true,"errors":[]}
+{"task":"08_resume","model":"haiku","first_check_ok":false,"checks_until_ok":2,"run_ok":true,"errors":["expected an expression, found keyword `return` (return inside match arm expression, line 15)"]}

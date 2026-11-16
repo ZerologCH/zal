@@ -1,0 +1,37 @@
+module anleitung.pipeline
+
+type Artefakt = { id: Str, groesse: Int }
+type Bericht = { ok: Bool, funde: Int }
+
+// Tools sind Operationen des Hosts. Eigene Fehler kommen als Err zurueck.
+extern tool build(repo: Str) -> Result<Artefakt, Str>
+extern tool test(a: Artefakt) -> Result<Bericht, Str> readonly
+extern tool deploy(a: Artefakt, ziel: Str) -> Result<Str, Str>
+
+// Eine `task` darf Effekte nutzen, muss sie aber in `requires` nennen.
+task pruefen(a: Artefakt) -> Result<Unit, Str>
+    requires tool.test
+{
+    let b = test(a)?
+    ensure b.ok, "Tests fehlgeschlagen"
+    ensure b.funde == 0, "Funde: " + str(b.funde)
+    Ok(())
+}
+
+// Ein `workflow` ist der Einstiegspunkt und darf ein `budget` haben.
+workflow release(repo: Str, ziel: Str) -> Result<Str, Str>
+    requires tool.build, tool.test, tool.deploy
+    budget { timeout: 5min, max_parallel: 4, max_tool_calls: 20 }
+{
+    let a = build(repo)?
+    pruefen(a)?
+    deploy(a, ziel)
+}
+
+// Tests bekommen ihre `requires` automatisch erteilt; Tools antworten per Mock.
+test "release laeuft durch"
+    requires tool.build, tool.test, tool.deploy
+{
+    let r = release("demo", "staging")
+    assert match r { Ok(_) => true, Err(_) => false }, "erwartet Ok"
+}

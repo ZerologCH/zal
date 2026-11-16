@@ -1,0 +1,5 @@
+module d17
+
+fn match_with_return(n: Int) -> Int { match n { 0 => { return 99 }, _ => n } }
+
+task t_ret(n: Int) -> Int { match_with_return(n) }

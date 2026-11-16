@@ -1,0 +1,32 @@
+module d13
+
+type P = { x: Int, name: Str }
+enum E { A, B(Int), C(Str) }
+
+task s_int() -> Str { str(-42) }
+task s_bool() -> Str { str(true) + str(false) }
+task s_str() -> Str { str("plain") }
+task s_dur() -> Str { str(250ms) }
+task s_unit() -> Str { str(()) }
+task s_list() -> Str { str([1, 2, 3]) }
+task s_list_empty() -> Str { let e: List<Int> = []
+    str(e) }
+task s_list_str() -> Str { str(["a", "b"]) }
+task s_some() -> Str { str(Some(5)) }
+task s_none() -> Str { let n: Option<Int> = None
+    str(n) }
+task s_ok() -> Str { let r: Result<Int, Str> = Ok(1)
+    str(r) }
+task s_err() -> Str { let r: Result<Int, Str> = Err("bad")
+    str(r) }
+task s_record() -> Str { str(P { x: 1, name: "n" }) }
+task s_enum_unit() -> Str { str(E.A) }
+task s_enum_int() -> Str { str(E.B(7)) }
+task s_enum_str() -> Str { str(E.C("x")) }
+task s_nested() -> Str { str(Some([Some(1), None])) }
+task s_list_of_records() -> Str { str([P { x: 1, name: "a" }, P { x: 2, name: "b" }]) }
+task s_nested_res() -> Str { let r: Result<Option<Int>, Str> = Ok(Some(3)) 
+    str(r) }
+task s_list_of_enums() -> Str { str([E.A, E.B(1), E.C("z")]) }
+task s_dur_list() -> Str { str([1s, 20ms]) }
+task s_concat_mix() -> Str { "n=" + str(1) + " b=" + str(true) + " d=" + str(5ms) }

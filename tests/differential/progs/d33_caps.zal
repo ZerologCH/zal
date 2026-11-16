@@ -1,0 +1,26 @@
+module d33
+
+extern tool a(x: Int) -> Int
+extern tool b(x: Int) -> Int
+extern tool build(x: Str) -> Result<Str, Str>
+extern tool deploy(x: Str) -> Result<Str, Str>
+extern net fetch(u: Str) -> Str
+
+workflow w_ab() -> Int requires tool.a, tool.b { a(1) + b(2) }
+workflow w_a() -> Int requires tool.a { a(1) }
+workflow w_wild() -> Result<Str, Str> requires tool.* {
+    let x = build("x")?
+    deploy(x)
+}
+workflow w_wild_a() -> Int requires tool.* { a(1) + b(2) }
+workflow w_net() -> Str requires net.fetch { fetch("u") }
+workflow w_none() -> Int { 5 }
+task t_calls_w_a() -> Int requires tool.a { w_a() }
+task t_mixed() -> Int requires tool.a, net.fetch { a(1) + len(fetch("u")) }
+workflow w_branch(flag: Bool) -> Int requires tool.a, tool.b { if flag { b(1) } else { a(1) } }
+workflow w_wild_net() -> Int requires tool.*, net.* { a(1) + len(fetch("q")) }
+workflow w_pre_order() -> Int requires tool.a, tool.b {
+    let x = a(1)
+    sleep(5ms)
+    x + b(2)
+}

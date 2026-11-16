@@ -1,0 +1,24 @@
+module agents.readonly_fanout
+
+extern tool read_file(path: Str) -> Result<Str, Str> readonly
+extern tool grep(pattern: Str) -> Result<Str, Str> readonly
+
+// Written sequentially on purpose. The four reads do not use each other's
+// results, so ZAL runs them concurrently. Results and order stay the same.
+task review() -> Result<Int, Str> requires tool.read_file, tool.grep {
+    let f1 = read_file("a.md")?
+    let f2 = read_file("b.md")?
+    let f3 = read_file("c.md")?
+    let f4 = read_file("d.md")?
+    let g1 = grep("TODO")?
+    Ok(len(f1 + f2 + f3 + f4 + g1))
+}
+
+// Fan-out in a loop: the call does not use `acc`, so it is parallelized too.
+task read_all(paths: List<Str>) -> Result<Int, Str> requires tool.read_file {
+    let mut acc: List<Str> = []
+    for p in paths {
+        acc = push(acc, read_file(p)?)
+    }
+    Ok(len(acc))
+}

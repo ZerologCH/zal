@@ -1,0 +1,6 @@
+module fehler.e7
+fn f() -> Int {
+    let mut n = 0
+    let t = spawn { n = 1 }
+    n
+}

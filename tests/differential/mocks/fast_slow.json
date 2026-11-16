@@ -1,0 +1,1 @@
+{"tools": {"fast": {"echo": true, "latency_ms": 10}, "slow": {"echo": true, "latency_ms": 400}, "boom": {"result": {"err": "boom"}, "latency_ms": 5}}}

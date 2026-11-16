@@ -1,0 +1,34 @@
+module eval.resume
+
+extern tool process(item: Str) -> Result<Str, Str>
+
+// Items already in `done` keep their result and are not sent to the tool again.
+task run_batch(items: List<Str>, done: Map<Str>) -> Result<Map<Str>, Str>
+    requires tool.process
+{
+    let mut out: Map<Str> = done
+    for item in items {
+        if !map_has(out, item) {
+            let r = process(item)
+            match r {
+                Ok(v) => {
+                    out = map_set(out, item, v)
+                }
+                Err(e) => {
+                    return Err("item " + item + " failed: " + e)
+                }
+            }
+        }
+    }
+    Ok(out)
+}
+
+workflow resume() -> Result<Int, Str>
+    requires tool.process
+    budget { timeout: 1min, max_parallel: 1, max_tool_calls: 10 }
+{
+    let mut done: Map<Str> = map_new()
+    done = map_set(done, "b", "old")
+    let result = run_batch(["a", "b", "c"], done)?
+    Ok(len(map_keys(result)))
+}

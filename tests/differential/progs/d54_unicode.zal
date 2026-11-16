@@ -1,0 +1,17 @@
+module d54
+
+task t_len(s: Str) -> Int { len(s) }
+task t_cmp(a: Str, b: Str) -> List<Bool> { [a < b, a == b, a > b] }
+task t_concat(a: Str, b: Str) -> Str { a + b + a }
+task t_keys() -> List<Str> {
+    let mut m: Map<Int> = map_new()
+    m = map_set(m, "é", 1)
+    m = map_set(m, "z", 2)
+    m = map_set(m, "ä", 3)
+    m = map_set(m, "日本", 4)
+    m = map_set(m, "😀", 5)
+    m = map_set(m, "Z", 6)
+    map_keys(m)
+}
+task t_json(s: Str) -> Str { json_str(s) }
+task t_emoji_len() -> Int { len("😀😀") + len("日本語") + len("é") }

@@ -1,0 +1,4 @@
+module fehler.e4
+fn f() -> Int {
+    "text"
+}

@@ -1,0 +1,7 @@
+module fehler.e5
+enum Farbe { Rot, Gruen }
+fn f(c: Farbe) -> Int {
+    match c {
+        Farbe.Rot => 1
+    }
+}

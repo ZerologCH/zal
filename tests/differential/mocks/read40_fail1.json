@@ -1,0 +1,1 @@
+{"tools": {"read": {"echo": true, "latency_ms": 10, "fail_first": 1}, "write": {"echo": true}}}

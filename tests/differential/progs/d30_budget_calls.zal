@@ -1,0 +1,25 @@
+module d30
+
+extern tool ping(x: Int) -> Int
+extern tool pingr(x: Int) -> Result<Int, Str>
+
+workflow w_limit(n: Int) -> Int requires tool.ping budget { max_tool_calls: 3 } {
+    let mut s = 0
+    for i in range(n) { s = s + ping(i) }
+    s
+}
+workflow w_par(n: Int) -> Int requires tool.ping budget { max_tool_calls: 3 } {
+    let (a, b, c, d) = parallel { ping(1), ping(2), ping(3), ping(4) }
+    a + b + c + d
+}
+workflow w_spawn() -> Int requires tool.ping budget { max_tool_calls: 2 } {
+    let ts = [spawn ping(1), spawn ping(2), spawn ping(3)]
+    let rs = join(ts)
+    len(rs)
+}
+workflow w_retry() -> Result<Int, Str> requires tool.pingr budget { max_tool_calls: 2 } {
+    retry(5) { pingr(1) }
+}
+workflow w_one() -> Int requires tool.ping budget { max_tool_calls: 1 } { ping(1) + ping(2) }
+workflow w_exact() -> Int requires tool.ping budget { max_tool_calls: 2 } { ping(1) + ping(2) }
+task t_nested_limit() -> Int requires tool.ping { w_limit(10) }
